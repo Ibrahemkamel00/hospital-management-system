@@ -5824,7 +5824,7 @@
   "pk": 25,
   "fields": {
     "location": 1,
-    "procedure": "Øºâ•â•©â•Ÿâ• Ùâ•Ÿ â•šâ•™â•¤â”ŒÙ ",
+    "procedure": "äÍÊÇÌåÇ ÈÓÑÚå ",
     "status": "CLOSED",
     "created_by": 7,
     "created_at": "2026-06-01T12:40:42.821Z",
@@ -6141,7 +6141,7 @@
   "fields": {
     "cssd_request": 25,
     "cssd_request_template": null,
-    "instrument_name": "â•Ÿâ•©",
+    "instrument_name": "ÇÊ",
     "quantity_sent": 4,
     "quantity_received_by_cssd": 4,
     "quantity_returned": 4,
@@ -7102,7 +7102,7 @@
     "recipient": null,
     "target_group": "MALE",
     "title": "New Fault Report",
-    "message": "New QR fault report for dental unit by â•©â•©â•™",
+    "message": "New QR fault report for dental unit by ÊÊÓ",
     "cssd_request": null,
     "url": "/maintenance-requests/57/",
     "is_read": true,
@@ -7368,7 +7368,7 @@
     "recipient": null,
     "target_group": "MALE",
     "title": "New Fault Report",
-    "message": "New QR fault report for dental unit by â”Œâ•šâ•§ â•ŸØ·â•¤â•Ø¹Øº",
+    "message": "New QR fault report for dental unit by ÚÈÏ ÇáÑÍãä",
     "cssd_request": null,
     "url": "/maintenance-requests/62/",
     "is_read": true,
@@ -9813,7 +9813,7 @@
   "fields": {
     "template": 1,
     "field_name": "surface_cleaning",
-    "label": "â•©Øºâ”˜Ùˆâ–Œ Âµâ•©â•ªÙÙˆâ•¤ â•ŸØ·â”œâ•™â•ªâ•",
+    "label": "ÊäÙíİ æÊØåíÑ ÇáÃÓØÍ",
     "sort_order": 1,
     "is_active": true
   }
@@ -9824,7 +9824,7 @@
   "fields": {
     "template": 1,
     "field_name": "chair_cleaning",
-    "label": "â•©Øºâ”˜Ùˆâ–Œ Âµâ•©â•ªÙÙˆâ•¤ â–€â•¤â•™Ùˆ â•ŸØ·â”œâ•™Øºâ•ŸØº",
+    "label": "ÊäÙíİ æÊØåíÑ ßÑÓí ÇáÃÓäÇä",
     "sort_order": 2,
     "is_active": true
   }
@@ -9835,7 +9835,7 @@
   "fields": {
     "template": 1,
     "field_name": "spittoon_cleaning",
-    "label": "â•©Øºâ”˜Ùˆâ–Œ Âµâ•©â•ªÙÙˆâ•¤ Ø¹â•’â–Œâ•Ÿâ•” â•ŸØ·Ø¹â•šâ•’â–â•”",
+    "label": "ÊäÙíİ æÊØåíÑ ãÕİÇÉ ÇáãÈÕŞÉ",
     "sort_order": 3,
     "is_active": true
   }
@@ -9846,7 +9846,7 @@
   "fields": {
     "template": 1,
     "field_name": "suction_filter_cleaning",
-    "label": "â•©Øºâ”˜Ùˆâ–Œ Âµâ•©â•ªÙÙˆâ•¤ â–ŒØ·â•Ÿâ•©â•¤ Âµâ•â•§â•Ÿâ•© â•ŸØ·â•˜â–Œâ•ª",
+    "label": "ÊäÙíİ æÊØåíÑ İáÇÊÑ æÍÏÇÊ ÇáÔİØ",
     "sort_order": 4,
     "is_active": true
   }
@@ -9857,7 +9857,7 @@
   "fields": {
     "template": 1,
     "field_name": "handwash_basin_cleaning",
-    "label": "â•©Øºâ”˜Ùˆâ–Œ Âµâ•©â•ªÙÙˆâ•¤ â•Âµâ•“ â–ˆâ•™Ø· â•ŸØ·Ùˆâ•§ÙˆØº",
+    "label": "ÊäÙíİ æÊØåíÑ ÍæÖ ÛÓá ÇáíÏíä",
     "sort_order": 5,
     "is_active": true
   }
@@ -9868,7 +9868,7 @@
   "fields": {
     "template": 1,
     "field_name": "ppe_drawers_refill",
-    "label": "â•©â”Œâ•šâ•â•” â•ŸØ·â”œâ•§â•¤â•Ÿâ•  â•šâ”œâ•§Âµâ•Ÿâ•© â•ŸØ·â•Ø¹â•ŸÙˆâ•” â•ŸØ·â•˜â•¬â•’Ùˆâ•”",
+    "label": "ÊÚÈÆÉ ÇáÃÏÑÇÌ ÈÃÏæÇÊ ÇáÍãÇíÉ ÇáÔÎÕíÉ",
     "sort_order": 6,
     "is_active": true
   }
@@ -9879,7 +9879,7 @@
   "fields": {
     "template": 1,
     "field_name": "soap_refill",
-    "label": "â•©â”Œâ•šâ•â•” â•â•ŸÂµÙˆâ•Ÿâ•© â•ŸØ·â•’â•Ÿâ•šÂµØº",
+    "label": "ÊÚÈÆÉ ÍÇæíÇÊ ÇáÕÇÈæä",
     "sort_order": 7,
     "is_active": true
   }
@@ -9890,7 +9890,7 @@
   "fields": {
     "template": 1,
     "field_name": "sanitizer_refill",
-    "label": "â•©â”Œâ•šâ•â•” â•â•ŸÂµÙˆâ•Ÿâ•© Ø¹â•ªÙâ•¤ â•ŸØ·Ùˆâ•§ÙˆØº",
+    "label": "ÊÚÈÆÉ ÍÇæíÇÊ ãØåÑ ÇáíÏíä",
     "sort_order": 8,
     "is_active": true
   }

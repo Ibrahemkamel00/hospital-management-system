@@ -5824,7 +5824,7 @@
   "pk": 25,
   "fields": {
     "location": 1,
-    "procedure": "غ═╩╟╠ف╟ ╚╙╤┌ف ",
+    "procedure": "نحتاجها بسرعه ",
     "status": "CLOSED",
     "created_by": 7,
     "created_at": "2026-06-01T12:40:42.821Z",
@@ -6141,7 +6141,7 @@
   "fields": {
     "cssd_request": 25,
     "cssd_request_template": null,
-    "instrument_name": "╟╩",
+    "instrument_name": "ات",
     "quantity_sent": 4,
     "quantity_received_by_cssd": 4,
     "quantity_returned": 4,
@@ -7102,7 +7102,7 @@
     "recipient": null,
     "target_group": "MALE",
     "title": "New Fault Report",
-    "message": "New QR fault report for dental unit by ╩╩╙",
+    "message": "New QR fault report for dental unit by تتس",
     "cssd_request": null,
     "url": "/maintenance-requests/57/",
     "is_read": true,
@@ -7368,7 +7368,7 @@
     "recipient": null,
     "target_group": "MALE",
     "title": "New Fault Report",
-    "message": "New QR fault report for dental unit by ┌╚╧ ╟ط╤═عغ",
+    "message": "New QR fault report for dental unit by عبد الرحمن",
     "cssd_request": null,
     "url": "/maintenance-requests/62/",
     "is_read": true,
@@ -9813,7 +9813,7 @@
   "fields": {
     "template": 1,
     "field_name": "surface_cleaning",
-    "label": "╩غ┘و▌ µ╩╪فو╤ ╟ط├╙╪═",
+    "label": "تنظيف وتطهير الأسطح",
     "sort_order": 1,
     "is_active": true
   }
@@ -9824,7 +9824,7 @@
   "fields": {
     "template": 1,
     "field_name": "chair_cleaning",
-    "label": "╩غ┘و▌ µ╩╪فو╤ ▀╤╙و ╟ط├╙غ╟غ",
+    "label": "تنظيف وتطهير كرسي الأسنان",
     "sort_order": 2,
     "is_active": true
   }
@@ -9835,7 +9835,7 @@
   "fields": {
     "template": 1,
     "field_name": "spittoon_cleaning",
-    "label": "╩غ┘و▌ µ╩╪فو╤ ع╒▌╟╔ ╟طع╚╒▐╔",
+    "label": "تنظيف وتطهير مصفاة المبصقة",
     "sort_order": 3,
     "is_active": true
   }
@@ -9846,7 +9846,7 @@
   "fields": {
     "template": 1,
     "field_name": "suction_filter_cleaning",
-    "label": "╩غ┘و▌ µ╩╪فو╤ ▌ط╟╩╤ µ═╧╟╩ ╟ط╘▌╪",
+    "label": "تنظيف وتطهير فلاتر وحدات الشفط",
     "sort_order": 4,
     "is_active": true
   }
@@ -9857,7 +9857,7 @@
   "fields": {
     "template": 1,
     "field_name": "handwash_basin_cleaning",
-    "label": "╩غ┘و▌ µ╩╪فو╤ ═µ╓ █╙ط ╟طو╧وغ",
+    "label": "تنظيف وتطهير حوض غسل اليدين",
     "sort_order": 5,
     "is_active": true
   }
@@ -9868,7 +9868,7 @@
   "fields": {
     "template": 1,
     "field_name": "ppe_drawers_refill",
-    "label": "╩┌╚╞╔ ╟ط├╧╤╟╠ ╚├╧µ╟╩ ╟ط═ع╟و╔ ╟ط╘╬╒و╔",
+    "label": "تعبئة الأدراج بأدوات الحماية الشخصية",
     "sort_order": 6,
     "is_active": true
   }
@@ -9879,7 +9879,7 @@
   "fields": {
     "template": 1,
     "field_name": "soap_refill",
-    "label": "╩┌╚╞╔ ═╟µو╟╩ ╟ط╒╟╚µغ",
+    "label": "تعبئة حاويات الصابون",
     "sort_order": 7,
     "is_active": true
   }
@@ -9890,7 +9890,7 @@
   "fields": {
     "template": 1,
     "field_name": "sanitizer_refill",
-    "label": "╩┌╚╞╔ ═╟µو╟╩ ع╪ف╤ ╟طو╧وغ",
+    "label": "تعبئة حاويات مطهر اليدين",
     "sort_order": 8,
     "is_active": true
   }
