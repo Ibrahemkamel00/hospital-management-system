@@ -1188,6 +1188,12 @@ def perform_pm(request, asset_id):
             next_pm_date=asset.next_pm_date,
             status="WAITING_CONFIRMATION"
 )
+        notify_event(
+    title="PPM Waiting Clinic Confirmation",
+    message=f"PPM for {asset.asset_name} is waiting for clinic confirmation.",
+    url=f"/pm-history/{pm_history.id}/",
+    target_groups=[asset.location.name] if asset.location else [],
+)
         for item in pm_items:
 
             check_value = request.POST.get(
