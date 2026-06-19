@@ -1188,11 +1188,16 @@ def perform_pm(request, asset_id):
             next_pm_date=asset.next_pm_date,
             status="WAITING_CONFIRMATION"
 )
+        target_group = None
+
+        if asset.location:
+            target_group = asset.location.group_type
+
         notify_event(
     title="PPM Waiting Clinic Confirmation",
     message=f"PPM for {asset.asset_number} is waiting for clinic confirmation.",
     url=f"/pm-history/{pm_history.id}/",
-    users=list(asset.location.engineers.all()) if asset.location else [],
+    target_groups=[target_group] if target_group else [],
 )
         for item in pm_items:
 
