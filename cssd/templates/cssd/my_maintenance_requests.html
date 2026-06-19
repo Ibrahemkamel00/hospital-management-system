@@ -1,0 +1,69 @@
+{% extends 'cssd/base.html' %}
+
+{% block title %}Maintenance Requests{% endblock %}
+
+{% block content %}
+
+<h3 class="fw-bold text-success mb-4">
+    My Maintenance Requests
+</h3>
+
+<div class="card shadow-sm border-0">
+    <div class="card-body">
+
+        <div class="table-responsive">
+            <table class="table table-bordered table-striped align-middle">
+                <thead class="table-dark">
+                    <tr>
+                        <th width="90">ID</th>
+                        <th>Asset</th>
+                        <th>Fault</th>
+                        <th width="120">Priority</th>
+                        <th width="140">Status</th>
+                        <th width="160">Reported By</th>
+                        <th width="190">Date</th>
+                    </tr>
+                </thead>
+
+                <tbody>
+                    {% for req in requests %}
+                    <tr>
+                        <td class="fw-bold">
+                            <a href="{% url 'maintenance_request_details' req.id %}"
+                                class="text-success text-decoration-none">
+                                    #{{ req.id }}
+                            </a>
+                        </td>
+                        <td>
+                            {{ req.asset.asset_number }} - {{ req.asset.device_name }}
+                        </td>
+                        <td>{{ req.fault_description }}</td>
+                        <td>{{ req.priority }}</td>
+                        <td>
+                            {% if req.status == "OPEN" %}
+                                <span class="badge bg-danger">Open</span>
+                            {% elif req.status == "IN_PROGRESS" %}
+                                <span class="badge bg-warning text-dark">In Progress</span>
+                            {% elif req.status == "CLOSED" %}
+                                <span class="badge bg-success">Closed</span>
+                            {% else %}
+                                <span class="badge bg-secondary">{{ req.status }}</span>
+                            {% endif %}
+                        </td>
+                        <td>{{ req.reported_by }}</td>
+                        <td>{{ req.reported_at }}</td>
+                    </tr>
+                    {% empty %}
+                    <tr>
+                        <td colspan="7" class="text-center text-muted py-4">
+                            No maintenance requests found
+                        </td>
+                    </tr>
+                    {% endfor %}
+                </tbody>
+            </table>
+        </div>
+
+</div>
+
+{% endblock %}

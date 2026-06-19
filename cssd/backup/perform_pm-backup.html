@@ -1,0 +1,187 @@
+{% extends 'cssd/base.html' %}
+
+{% block title %}Perform PM{% endblock %}
+
+{% block content %}
+
+<div class="container mt-4">
+
+    <div class="card shadow border-0">
+        <div class="card-body">
+
+            <h3 class="fw-bold text-success mb-4">
+                Preventive Maintenance
+            </h3>
+
+            <h5 class="mb-4">
+                {{ asset.device_name }}
+                ({{ asset.asset_number }})
+            </h5>
+
+            {% if error %}
+                <div class="alert alert-danger">
+                    {{ error }}
+                </div>
+            {% endif %}
+
+            <form method="post">
+                {% csrf_token %}
+
+                <table class="table table-bordered align-middle">
+
+                    <tr>
+                        <th width="35%">Power Check</th>
+                        <td>
+                            <select name="power_check"
+                                    class="form-select pm-check"
+                                    data-target="power_spare_box">
+                                <option value="OK">OK</option>
+                                <option value="NOT_OK">Not OK</option>
+                            </select>
+
+                            <div id="power_spare_box" class="mt-2 d-none">
+                                <input type="text"
+                                       name="power_spare_part"
+                                       class="form-control"
+                                       placeholder="Spare part needed for Power Check">
+                            </div>
+                        </td>
+                    </tr>
+
+                    <tr>
+                        <th>Function Check</th>
+                        <td>
+                            <select name="function_check"
+                                    class="form-select pm-check"
+                                    data-target="function_spare_box">
+                                <option value="OK">OK</option>
+                                <option value="NOT_OK">Not OK</option>
+                            </select>
+
+                            <div id="function_spare_box" class="mt-2 d-none">
+                                <input type="text"
+                                       name="function_spare_part"
+                                       class="form-control"
+                                       placeholder="Spare part needed for Function Check">
+                            </div>
+                        </td>
+                    </tr>
+
+                    <tr>
+                        <th>Air / Water Check</th>
+                        <td>
+                            <select name="air_water_check"
+                                    class="form-select pm-check"
+                                    data-target="air_water_spare_box">
+                                <option value="OK">OK</option>
+                                <option value="NOT_OK">Not OK</option>
+                            </select>
+
+                            <div id="air_water_spare_box" class="mt-2 d-none">
+                                <input type="text"
+                                       name="air_water_spare_part"
+                                       class="form-control"
+                                       placeholder="Spare part needed for Air / Water Check">
+                            </div>
+                        </td>
+                    </tr>
+
+                    <tr>
+                        <th>Safety Check</th>
+                        <td>
+                            <select name="safety_check"
+                                    class="form-select pm-check"
+                                    data-target="safety_spare_box">
+                                <option value="OK">OK</option>
+                                <option value="NOT_OK">Not OK</option>
+                            </select>
+
+                            <div id="safety_spare_box" class="mt-2 d-none">
+                                <input type="text"
+                                       name="safety_spare_part"
+                                       class="form-control"
+                                       placeholder="Spare part needed for Safety Check">
+                            </div>
+                        </td>
+                    </tr>
+
+                    <tr>
+                        <th>Cleaning Check</th>
+                        <td>
+                            <select name="cleaning_check"
+                                    class="form-select pm-check"
+                                    data-target="cleaning_spare_box">
+                                <option value="OK">OK</option>
+                                <option value="NOT_OK">Not OK</option>
+                            </select>
+
+                            <div id="cleaning_spare_box" class="mt-2 d-none">
+                                <input type="text"
+                                       name="cleaning_spare_part"
+                                       class="form-control"
+                                       placeholder="Spare part needed for Cleaning Check">
+                            </div>
+                        </td>
+                    </tr>
+
+                </table>
+
+                <div class="form-check mb-4 p-3 border rounded bg-light">
+                    <input
+                        class="form-check-input"
+                        type="checkbox"
+                        name="ppm_sticker_applied"
+                        id="ppmStickerApplied"
+                        required>
+
+                    <label class="form-check-label fw-bold text-success"
+                           for="ppmStickerApplied">
+                        PPM Sticker Applied
+                    </label>
+                </div>
+
+                <button type="submit"
+                        class="btn btn-success">
+                    Complete PM
+                </button>
+
+                <a href="{% url 'asset_details' asset.id %}"
+                   class="btn btn-secondary">
+                    Cancel
+                </a>
+
+            </form>
+
+        </div>
+    </div>
+
+</div>
+
+<script>
+    function updateSparePartBoxes(){
+        const checks = document.querySelectorAll(".pm-check");
+
+        checks.forEach(function(select){
+            const targetId = select.getAttribute("data-target");
+            const box = document.getElementById(targetId);
+            const input = box.querySelector("input");
+
+            if(select.value === "NOT_OK"){
+                box.classList.remove("d-none");
+                input.required = true;
+            } else {
+                box.classList.add("d-none");
+                input.required = false;
+                input.value = "";
+            }
+        });
+    }
+
+    document.querySelectorAll(".pm-check").forEach(function(select){
+        select.addEventListener("change", updateSparePartBoxes);
+    });
+
+    updateSparePartBoxes();
+</script>
+
+{% endblock %}

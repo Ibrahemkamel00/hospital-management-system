@@ -1,0 +1,59 @@
+{% extends 'cssd/base.html' %}
+
+{% block title %}Report Fault{% endblock %}
+
+{% block content %}
+
+<h3 class="fw-bold text-danger mb-4">
+    Report Fault
+</h3>
+
+<div class="card shadow-sm border-0">
+    <div class="card-body">
+
+        <h5 class="fw-bold text-success mb-3">
+            {{ asset.asset_number }} - {{ asset.device_name }}
+        </h5>
+
+        <form method="post">
+            {% csrf_token %}
+
+            <div class="mb-3">
+                <label class="form-label fw-bold">
+                    Fault Description
+                </label>
+
+                <textarea name="fault_description"
+                          class="form-control"
+                          rows="5"
+                          required></textarea>
+            </div>
+
+            <div class="mb-3">
+                <label class="form-label fw-bold">
+                    Priority
+                </label>
+
+                <select name="priority" class="form-select">
+                    <option value="LOW">Low</option>
+                    <option value="NORMAL" selected>Normal</option>
+                    <option value="HIGH">High</option>
+                    <option value="URGENT">Urgent</option>
+                </select>
+            </div>
+
+            <button type="submit" class="btn btn-danger">
+                Submit Fault
+            </button>
+
+            <a href="{% url 'asset_details' asset.id %}"
+               class="btn btn-secondary">
+                Cancel
+            </a>
+
+        </form>
+
+    </div>
+</div>
+
+{% endblock %}

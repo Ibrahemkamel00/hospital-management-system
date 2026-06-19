@@ -1,0 +1,190 @@
+{% extends 'cssd/base.html' %}
+{% block title %}New Request{% endblock %}
+
+{% block content %}
+
+<div class="d-flex justify-content-between align-items-center mb-4">
+    <div>
+        <h3 class="mb-1 text-success fw-bold">Create CSSD Request</h3>
+        <small class="text-muted">Create new instruments transfer request</small>
+    </div>
+</div>
+
+<form method="post">
+    {% csrf_token %}
+
+    <div class="row mb-4">
+        <div class="col-md-6">
+            <label class="form-label fw-semibold">Location</label>
+            {{ form.location }}
+        </div>
+
+        <div class="col-md-6">
+            <label class="form-label fw-semibold">Note / Procedure</label>
+            <input type="text" name="procedure" class="form-control" placeholder="Enter procedure or note">
+        </div>
+    </div>
+
+    <hr>
+
+    <h5 class="fw-bold text-success mb-3">Selected Forms</h5>
+
+    <div id="forms-container"></div>
+
+    <button type="button" class="btn btn-outline-success btn-sm mt-2" onclick="addForm()">
+        + Add Form
+    </button>
+
+    <hr class="my-4">
+
+    <h5 class="fw-bold text-success mb-3">Additional Instruments</h5>
+
+    <div class="table-responsive">
+        <table class="table table-bordered align-middle bg-white">
+            <thead class="table-light">
+                <tr>
+                    <th>Instrument Name</th>
+                    <th style="width:150px;">Quantity</th>
+                    <th style="width:80px;">Action</th>
+                </tr>
+            </thead>
+            <tbody id="manual-container"></tbody>
+        </table>
+    </div>
+
+    <button type="button" class="btn btn-outline-primary btn-sm" onclick="addManualInstrument()">
+        + Add Instrument
+    </button>
+
+    <div class="mt-4 text-end">
+        <button type="submit" class="btn btn-success px-4">
+            Save Request
+        </button>
+    </div>
+</form>
+
+<script>
+let formIndex = 0;
+
+function addForm() {
+    formIndex++;
+
+    let container = document.getElementById("forms-container");
+
+    let box = document.createElement("div");
+    box.className = "card border-success-subtle shadow-sm mb-3";
+
+    box.innerHTML = `
+        <div class="card-body">
+            <div class="d-flex justify-content-between align-items-center mb-3">
+                <h6 class="fw-bold text-success mb-0">Form ${formIndex}</h6>
+                <button type="button" class="btn btn-sm btn-outline-danger" onclick="this.closest('.card').remove()">
+                    Remove
+                </button>
+            </div>
+
+            <div class="mb-3">
+                <label class="form-label fw-semibold">Choose Form</label>
+                <select class="form-select" name="template_${formIndex}" onchange="loadItems(this, ${formIndex})">
+                    <option value="">---------</option>
+                    {% for template in templates %}
+                        <option value="{{ template.id }}">{{ template.name }}</option>
+                    {% endfor %}
+                </select>
+            </div>
+
+            <div id="items_${formIndex}" class="mt-3"></div>
+        </div>
+    `;
+
+    container.appendChild(box);
+}
+
+function loadItems(selectElement, index) {
+    let templateId = selectElement.value;
+    let itemsDiv = document.getElementById("items_" + index);
+
+    itemsDiv.innerHTML = "";
+
+    if (!templateId) {
+        return;
+    }
+
+    fetch("/get-template-items/" + templateId + "/")
+        .then(response => response.json())
+        .then(data => {
+            if (data.length === 0) {
+                itemsDiv.innerHTML = `<div class="alert alert-warning mb-0">No instruments found for this form.</div>`;
+                return;
+            }
+
+            let html = `
+                <div class="table-responsive">
+                    <table class="table table-sm table-bordered align-middle bg-white">
+                        <thead class="table-light">
+                            <tr>
+                                <th>Instrument</th>
+                                <th style="width:150px;">Quantity</th>
+                            </tr>
+                        </thead>
+                        <tbody>
+            `;
+
+            data.forEach(function(item) {
+                html += `
+                    <tr>
+                        <td>${item.instrument_name}</td>
+                        <td>
+                            <input class="form-control form-control-sm"
+                                   type="number"
+                                   min="0"
+                                   name="qty_${index}_${item.id}"
+                                   value="0">
+                        </td>
+                    </tr>
+                `;
+            });
+
+            html += `
+                        </tbody>
+                    </table>
+                </div>
+            `;
+
+            itemsDiv.innerHTML = html;
+        });
+}
+
+function addManualInstrument() {
+    let container = document.getElementById("manual-container");
+
+    let row = document.createElement("tr");
+
+    row.innerHTML = `
+        <td>
+            <input type="text"
+                   name="manual_name[]"
+                   class="form-control"
+                   placeholder="Instrument name">
+        </td>
+        <td>
+            <input type="number"
+                   min="1"
+                   name="manual_qty[]"
+                   class="form-control"
+                   placeholder="Qty">
+        </td>
+        <td class="text-center">
+            <button type="button" class="btn btn-sm btn-outline-danger" onclick="this.closest('tr').remove()">
+                X
+            </button>
+        </td>
+    `;
+
+    container.appendChild(row);
+}
+
+addForm();
+</script>
+
+{% endblock %}

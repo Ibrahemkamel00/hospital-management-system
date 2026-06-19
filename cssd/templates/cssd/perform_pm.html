@@ -1,0 +1,243 @@
+{% extends 'cssd/base.html' %}
+
+{% block title %}Perform PM{% endblock %}
+
+{% block content %}
+
+<div class="container mt-4">
+
+    <div class="card shadow border-0">
+        <div class="card-body">
+
+            <h3 class="fw-bold text-success mb-4">
+                Preventive Maintenance
+            </h3>
+
+            <h5 class="mb-4">
+                {{ asset.device_name }}
+                ({{ asset.asset_number }})
+            </h5>
+
+            {% if error %}
+                <div class="alert alert-danger">
+                    {{ error }}
+                </div>
+            {% endif %}
+
+            <form method="post">
+                {% csrf_token %}
+
+                {% for item in pm_items %}
+
+                    <div class="card mb-3 border-success">
+
+                        <div class="card-header bg-success text-white">
+                            <strong>{{ item.system }}</strong>
+                            -
+                            {{ item.component }}
+                        </div>
+
+                        <div class="card-body">
+
+                            <h6 class="text-muted mb-3">
+                                Inspection Points
+                            </h6>
+
+                            <div class="border rounded p-3 bg-light mb-3">
+                                {{ item.inspection_points|linebreaks }}
+                            </div>
+
+                            <div class="row">
+                                <div class="col-md-4">
+                                    <label class="fw-bold">
+                                        Result
+                                    </label>
+
+                                    <select
+                                        name="check_{{ item.id }}"
+                                        class="form-select pm-check"
+                                        data-target="spare_box_{{ item.id }}">
+
+                                        <option value="OK">
+                                            OK
+                                        </option>
+
+                                        <option value="NOT_OK">
+                                            NOT OK
+                                        </option>
+
+                                    </select>
+                                </div>
+                            </div>
+
+                            <div
+                                id="spare_box_{{ item.id }}"
+                                class="mt-3 d-none">
+
+                                <label class="fw-bold text-danger mb-2">
+                                    Required Spare Parts
+                                </label>
+
+                                <div
+                                    class="spare-parts-container"
+                                    id="spare_parts_container_{{ item.id }}">
+
+                                    <div class="row mb-2 spare-part-row">
+
+                                        <div class="col-md-8">
+                                            <input
+                                                type="text"
+                                                name="spare_part_{{ item.id }}"
+                                                class="form-control spare-part-input"
+                                                placeholder="Required Spare Part">
+                                        </div>
+
+                                        <div class="col-md-3">
+                                            <input
+                                                type="number"
+                                                min="1"
+                                                value="1"
+                                                name="spare_qty_{{ item.id }}"
+                                                class="form-control spare-qty-input">
+                                        </div>
+
+                                        <div class="col-md-1">
+                                            <button
+                                                type="button"
+                                                class="btn btn-danger btn-sm"
+                                                onclick="removeSparePartRow(this)">
+                                                X
+                                            </button>
+                                        </div>
+
+                                    </div>
+
+                                </div>
+
+                                <button
+                                    type="button"
+                                    class="btn btn-outline-danger btn-sm mt-2"
+                                    onclick="addSparePartRow('{{ item.id }}')">
+                                    + Add Spare Part
+                                </button>
+
+                            </div>
+
+                        </div>
+
+                    </div>
+
+                {% endfor %}
+
+                <div class="form-check mb-4 p-3 border rounded bg-light">
+
+                    <input
+                        class="form-check-input"
+                        type="checkbox"
+                        name="ppm_sticker_applied"
+                        id="ppmStickerApplied"
+                        required>
+
+                    <label
+                        class="form-check-label fw-bold text-success"
+                        for="ppmStickerApplied">
+                        PPM Sticker Applied
+                    </label>
+
+                </div>
+
+                <button
+                    type="submit"
+                    class="btn btn-success">
+                    Complete PM
+                </button>
+
+                <a
+                    href="{% url 'asset_details' asset.id %}"
+                    class="btn btn-secondary">
+                    Cancel
+                </a>
+
+            </form>
+
+        </div>
+    </div>
+
+</div>
+
+<script>
+function updateSparePartBoxes(){
+
+    document.querySelectorAll(".pm-check").forEach(function(select){
+
+        const targetId = select.dataset.target;
+        const box = document.getElementById(targetId);
+
+        if(select.value === "NOT_OK"){
+            box.classList.remove("d-none");
+        } else {
+            box.classList.add("d-none");
+        }
+
+    });
+
+}
+
+function addSparePartRow(itemId){
+
+    const container = document.getElementById(
+        "spare_parts_container_" + itemId
+    );
+
+    const row = document.createElement("div");
+    row.className = "row mb-2 spare-part-row";
+
+    row.innerHTML = `
+        <div class="col-md-8">
+            <input
+                type="text"
+                name="spare_part_${itemId}"
+                class="form-control"
+                placeholder="Required Spare Part">
+        </div>
+
+        <div class="col-md-3">
+            <input
+                type="number"
+                min="1"
+                value="1"
+                name="spare_qty_${itemId}[]"
+                class="form-control">
+        </div>
+
+        <div class="col-md-1">
+            <button
+                type="button"
+                class="btn btn-danger btn-sm"
+                onclick="removeSparePartRow(this)">
+                X
+            </button>
+        </div>
+    `;
+
+    container.appendChild(row);
+}
+
+function removeSparePartRow(button){
+
+    const container = button.closest(".spare-parts-container");
+    const rows = container.querySelectorAll(".spare-part-row");
+
+    if(rows.length > 1){
+        button.closest(".spare-part-row").remove();
+    }
+}
+
+document.querySelectorAll(".pm-check").forEach(function(select){
+    select.addEventListener("change", updateSparePartBoxes);
+});
+
+updateSparePartBoxes();
+</script>
+
+{% endblock %}

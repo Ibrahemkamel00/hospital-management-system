@@ -1,0 +1,49 @@
+{% extends 'cssd/base.html' %}
+
+{% block title %}Equipment Access{% endblock %}
+
+{% block content %}
+
+<div class="container">
+
+    <div class="card shadow border-0">
+        <div class="card-header bg-success text-white">
+            Equipment Fault Reporting
+        </div>
+
+        <div class="card-body text-center">
+
+            <h3>{{ asset.device_name }}</h3>
+
+            <p>
+                Asset No:
+                <strong>{{ asset.asset_number }}</strong>
+            </p>
+
+            <p>
+                Location:
+                <strong>{{ asset.location|default:"-" }}</strong>
+            </p>
+
+            <hr>
+
+            <h5 class="mb-4">
+                Are you a system user?
+            </h5>
+
+            <a href="{% url 'login' %}?next={% url 'asset_details' asset.id %}"
+               class="btn btn-primary btn-lg mb-3 w-100">
+                Yes, Login to System
+            </a>
+
+            <a href="{% url 'public_report_fault' asset.id %}"
+               class="btn btn-danger btn-lg w-100">
+                No, Continue as Guest
+            </a>
+
+        </div>
+    </div>
+
+</div>
+
+{% endblock %}

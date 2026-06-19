@@ -1,0 +1,89 @@
+{% extends 'cssd/base.html' %}
+
+{% block title %}Clinic Maintenance Dashboard{% endblock %}
+
+{% block content %}
+
+<style>
+    .clinic-dash-title{font-weight:900;color:#0f766e;margin-bottom:22px;}
+    .clinic-location-box{border:0;border-radius:18px;background:linear-gradient(135deg,#ecfeff,#f8fafc);box-shadow:0 10px 25px rgba(15,118,110,.12);}
+    .dash-link{text-decoration:none;display:block;height:100%;}
+    .kpi-card{border:0;border-radius:18px;min-height:92px;color:#fff;overflow:hidden;position:relative;box-shadow:0 14px 30px rgba(15,23,42,.16);transition:.18s ease;}
+    .dash-link:hover .kpi-card{transform:translateY(-4px);box-shadow:0 18px 38px rgba(15,23,42,.22);}
+    .kpi-card::after{content:"";position:absolute;right:-35px;top:-35px;width:82px;height:82px;border-radius:50%;background:rgba(255,255,255,.18);}
+    .kpi-body{padding:12px 14px;position:relative;z-index:1;}
+    .kpi-icon{font-size:21px;margin-bottom:5px;}
+    .kpi-label{font-size:12.5px;font-weight:800;letter-spacing:.2px;opacity:.96;}
+    .kpi-value{font-size:28px;font-weight:900;line-height:1;margin-top:8px;}
+    .g-total{background:linear-gradient(135deg,#2563eb,#06b6d4);}
+    .g-requests{background:linear-gradient(135deg,#475569,#0f172a);}
+    .g-open{background:linear-gradient(135deg,#ef4444,#b91c1c);}
+    .g-progress{background:linear-gradient(135deg,#f59e0b,#d97706);color:#111827;}
+    .g-part-approval{background:linear-gradient(135deg,#334155,#111827);}
+    .g-waiting-parts{background:linear-gradient(135deg,#7c3aed,#4c1d95);}
+    .g-service-confirm{background:linear-gradient(135deg,#facc15,#f97316);color:#111827;}
+    .g-spare-confirm{background:linear-gradient(135deg,#fb923c,#c2410c);}
+    .g-confirm{background:linear-gradient(135deg,#0ea5e9,#0369a1);}
+    .g-closed{background:linear-gradient(135deg,#22c55e,#15803d);}
+    @media(max-width:768px){.kpi-card{min-height:125px}.kpi-value{font-size:30px}}
+</style>
+
+<div class="container-fluid">
+    <div class="mb-3">
+        <h4 class="fw-bold text-success mb-0">Welcome, {{ user.get_full_name|default:user.username }} 👋</h4>
+        <small class="text-muted">Maintenance Dashboard</small>
+    </div>
+
+    <h2 class="clinic-dash-title">Clinic Maintenance Dashboard</h2>
+
+    <div class="card clinic-location-box mb-4">
+        <div class="card-body">
+            <div class="fw-bold text-secondary mb-2">My Locations</div>
+            {% for location in my_locations %}
+                <span class="badge bg-success me-2 mb-2 p-2">{{ location.name }}</span>
+            {% empty %}
+                <span class="text-danger">No Locations Assigned</span>
+            {% endfor %}
+        </div>
+    </div>
+
+    <div class="row row-cols-2 row-cols-md-3 row-cols-xl-5 g-3">
+        <div class="col">
+            <a href="{% url 'clinic_assets' %}" class="dash-link"><div class="kpi-card g-total"><div class="kpi-body"><div class="kpi-icon">🏥</div><div class="kpi-label">Total Assets</div><div class="kpi-value">{{ total_assets }}</div></div></div></a>
+        </div>
+
+        <div class="col">
+            <a href="{% url 'maintenance_requests' %}" class="dash-link"><div class="kpi-card g-requests"><div class="kpi-body"><div class="kpi-icon">📋</div><div class="kpi-label">Total Requests</div><div class="kpi-value">{{ total_requests }}</div></div></div></a>
+        </div>
+
+        <div class="col">
+            <a href="{% url 'maintenance_requests' %}?status=OPEN" class="dash-link"><div class="kpi-card g-open"><div class="kpi-body"><div class="kpi-icon">🚨</div><div class="kpi-label">Open</div><div class="kpi-value">{{ open_requests }}</div></div></div></a>
+        </div>
+
+        <div class="col">
+            <a href="{% url 'maintenance_requests' %}?status=IN_PROGRESS" class="dash-link"><div class="kpi-card g-progress"><div class="kpi-body"><div class="kpi-icon">🔧</div><div class="kpi-label">In Progress</div><div class="kpi-value">{{ in_progress }}</div></div></div></a>
+        </div>
+
+        <div class="col">
+            <a href="{% url 'maintenance_requests' %}?status=WAITING_PARTS" class="dash-link"><div class="kpi-card g-waiting-parts"><div class="kpi-body"><div class="kpi-icon">📦</div><div class="kpi-label">Need Spare Part</div><div class="kpi-value">{{ waiting_parts }}</div></div></div></a>
+        </div>
+
+        <div class="col">
+            <a href="{% url 'maintenance_requests' %}?confirm_type=service" class="dash-link"><div class="kpi-card g-service-confirm"><div class="kpi-body"><div class="kpi-icon">📝</div><div class="kpi-label">Waiting Service Confirm</div><div class="kpi-value">{{ waiting_service_confirm }}</div></div></div></a>
+        </div>
+
+        <div class="col">
+            <a href="{% url 'maintenance_requests' %}?confirm_type=spare" class="dash-link"><div class="kpi-card g-spare-confirm"><div class="kpi-body"><div class="kpi-icon">🧩</div><div class="kpi-label">Waiting Spare Part Confirm</div><div class="kpi-value">{{ waiting_spare_confirm }}</div></div></div></a>
+        </div>
+
+        <div class="col">
+            <a href="{% url 'maintenance_requests' %}?status=WAITING_CONFIRMATION" class="dash-link"><div class="kpi-card g-confirm"><div class="kpi-body"><div class="kpi-icon">⏳</div><div class="kpi-label">All Waiting Confirmation</div><div class="kpi-value">{{ waiting_confirmation }}</div></div></div></a>
+        </div>
+
+        <div class="col">
+            <a href="{% url 'maintenance_requests' %}?status=CLOSED" class="dash-link"><div class="kpi-card g-closed"><div class="kpi-body"><div class="kpi-icon">✅</div><div class="kpi-label">Closed</div><div class="kpi-value">{{ closed_requests }}</div></div></div></a>
+        </div>
+    </div>
+</div>
+
+{% endblock %}

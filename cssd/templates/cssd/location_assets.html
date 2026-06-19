@@ -1,0 +1,20 @@
+{% extends 'cssd/base.html' %}
+{% block title %}Location Assets{% endblock %}
+{% block content %}
+<h3 class="fw-bold text-success mb-3">{{ location.name }} - Assets</h3>
+<div class="row row-cols-2 row-cols-md-4 g-3 mb-4">
+  <div class="col"><div class="card border-0 shadow-sm"><div class="card-body text-center"><small>Assets</small><h3>{{ assets.count }}</h3></div></div></div>
+  <div class="col"><div class="card border-0 shadow-sm"><div class="card-body text-center"><small>Open Requests</small><h3>{{ open_requests }}</h3></div></div></div>
+  <div class="col"><div class="card border-0 shadow-sm"><div class="card-body text-center"><small>MTTR</small><h3>{{ mttr_days }}d</h3></div></div></div>
+  <div class="col"><div class="card border-0 shadow-sm"><div class="card-body text-center"><small>Availability</small><h3>{{ availability }}%</h3></div></div></div>
+</div>
+<div class="card border-0 shadow-sm"><div class="card-body table-responsive">
+<table class="table table-striped align-middle">
+<thead class="table-dark"><tr><th>Asset No.</th><th>Device</th><th>Serial</th><th>Status</th><th>Action</th></tr></thead>
+<tbody>
+{% for asset in assets %}
+<tr><td>{{ asset.asset_number }}</td><td>{{ asset.device_name }}</td><td>{{ asset.serial_number|default:'-' }}</td><td>{{ asset.get_status_display }}</td><td><a class="btn btn-sm btn-success" href="{% url 'asset_details' asset.id %}">Open</a></td></tr>
+{% empty %}<tr><td colspan="5" class="text-center text-muted">No assets found.</td></tr>{% endfor %}
+</tbody></table>
+</div></div>
+{% endblock %}

@@ -1,0 +1,399 @@
+{% extends 'cssd/base.html' %}
+{% load static %}
+
+{% block title %}Daily Maintenance Report{% endblock %}
+
+{% block content %}
+
+<style>
+    .report-page{
+        background:white;
+        padding:25px;
+        border-radius:14px;
+        color:#222;
+        position:relative;
+        overflow:hidden;
+    }
+
+    .report-page::before{
+        content:"";
+        position:absolute;
+        top:50%;
+        left:50%;
+        width:650px;
+        height:650px;
+        transform:translate(-50%,-50%);
+        background-image:url("{% static 'images/company_logo.png' %}");
+        background-repeat:no-repeat;
+        background-position:center;
+        background-size:contain;
+        opacity:0.06;
+        z-index:0;
+    }
+
+    .report-page > *{
+        position:relative;
+        z-index:1;
+    }
+
+    .report-header{
+        display:flex;
+        align-items:center;
+        justify-content:space-between;
+        border-bottom:4px solid #00695c;
+        padding-bottom:10px;
+        margin-bottom:14px;
+    }
+
+    .report-logo{
+        height:65px;
+        width:90px;
+        object-fit:contain;
+    }
+
+    .report-title{
+        text-align:center;
+        flex:1;
+    }
+
+    .report-title h2{
+        margin:0;
+        color:#00695c;
+        font-weight:900;
+        font-size:30px;
+    }
+
+    .report-title h5{
+        margin:3px 0 0 0;
+        font-size:14px;
+        color:#333;
+        font-weight:800;
+    }
+
+    .section-title{
+        color:#000;
+        font-size:18px;
+        font-weight:900;
+        margin-top:14px;
+        margin-bottom:8px;
+        border-bottom:3px solid #00695c;
+        padding-bottom:4px;
+    }
+
+    .report-table{
+        width:100%;
+        border-collapse:collapse;
+        margin-bottom:8px;
+        font-size:13px;
+        background:rgba(255,255,255,0.88);
+    }
+
+    .report-table th{
+        background:#dff1ed;
+        color:#000;
+        padding:6px 8px;
+        border:1px solid #8abbb2;
+        font-weight:900;
+        font-size:13px;
+        text-align:center;
+    }
+
+    .report-table td{
+        padding:6px 8px;
+        border:1px solid #8abbb2;
+        color:#111;
+        font-weight:700;
+        text-align:center;
+    }
+
+    .signature-table{
+        width:100%;
+        border-collapse:collapse;
+        margin-top:14px;
+        font-size:12px;
+        text-align:center;
+        background:rgba(255,255,255,0.88);
+    }
+
+    .signature-table th{
+        background:#00695c;
+        color:white;
+        padding:6px;
+        border:1px solid #00695c;
+        font-weight:800;
+    }
+
+    .signature-table td{
+        height:62px;
+        border:1px solid #8abbb2;
+        padding:6px;
+        vertical-align:bottom;
+        font-weight:700;
+    }
+
+    .footer-note{
+        text-align:center;
+        color:#444;
+        font-size:11px;
+        margin-top:12px;
+        border-top:1px solid #ccc;
+        padding-top:7px;
+        font-weight:700;
+    }
+
+    @media print{
+        .user-bar,
+        nav,
+        footer,
+        .no-print{
+            display:none !important;
+        }
+
+        body{
+            background:white !important;
+        }
+
+        .main-card,
+        .card{
+            box-shadow:none !important;
+            border:none !important;
+            margin:0 !important;
+            padding:0 !important;
+            max-width:100% !important;
+            background:white !important;
+        }
+
+        .card-body{
+            padding:0 !important;
+        }
+
+        .report-page{
+            padding:0;
+            border-radius:0;
+        }
+
+        .report-page::before{
+            width:600px;
+            height:600px;
+            opacity:0.055;
+        }
+
+        .report-logo{
+            height:52px;
+            width:70px;
+        }
+
+        .report-title h2{
+            font-size:23px;
+        }
+
+        .report-title h5{
+            font-size:11px;
+        }
+
+        .report-header{
+            padding-bottom:7px;
+            margin-bottom:9px;
+        }
+
+        .section-title{
+            color:#000 !important;
+            font-size:15px;
+            margin-top:9px;
+            margin-bottom:5px;
+            border-bottom:2px solid #00695c;
+            padding-bottom:3px;
+        }
+
+        .report-table{
+            font-size:10.5px;
+            margin-bottom:5px;
+        }
+
+        .report-table th,
+        .report-table td{
+            padding:4px;
+        }
+
+        .signature-table{
+            font-size:10px;
+            margin-top:8px;
+        }
+
+        .signature-table td{
+            height:42px;
+            padding:4px;
+        }
+
+        .footer-note{
+            font-size:9.5px;
+            margin-top:7px;
+            padding-top:5px;
+        }
+
+        *{
+            -webkit-print-color-adjust:exact !important;
+            print-color-adjust:exact !important;
+        }
+
+        @page{
+            size:A4;
+            margin:8mm;
+        }
+    }
+</style>
+
+<div class="report-page">
+
+    <div class="report-header">
+
+        <img src="{% static 'images/hospital_logo.png' %}"
+             class="report-logo">
+
+        <div class="report-title">
+            <h2>Daily Maintenance Report</h2>
+            <h5>Maintenance Management System</h5>
+            <h5>Biomedical Engineering Department</h5>
+        </div>
+
+        <img src="{% static 'images/company_logo.png' %}"
+             class="report-logo">
+
+    </div>
+
+    <div class="section-title">
+        Report Information
+    </div>
+
+    <table class="report-table">
+        <tr>
+            <th width="25%">Report Type</th>
+            <td width="25%">Daily Report</td>
+
+            <th width="25%">Report Date</th>
+            <td width="25%">{{ report_date }}</td>
+        </tr>
+    </table>
+
+    <div class="section-title">
+        Maintenance Summary
+    </div>
+
+    <table class="report-table">
+        <thead>
+            <tr>
+                <th width="10%">#</th>
+                <th>Item</th>
+                <th width="20%">Count</th>
+            </tr>
+        </thead>
+
+        <tbody>
+            <tr>
+                <td>1</td>
+                <td>Total Requests</td>
+                <td>{{ total_requests }}</td>
+            </tr>
+
+            <tr>
+                <td>2</td>
+                <td>Open Requests</td>
+                <td>{{ open_requests }}</td>
+            </tr>
+
+            <tr>
+                <td>3</td>
+                <td>In Progress</td>
+                <td>{{ in_progress }}</td>
+            </tr>
+
+            <tr>
+                <td>4</td>
+                <td>Waiting Parts</td>
+                <td>{{ waiting_parts }}</td>
+            </tr>
+
+            <tr>
+                <td>5</td>
+                <td>Waiting Confirmation</td>
+                <td>{{ waiting_confirmation }}</td>
+            </tr>
+
+            <tr>
+                <td>6</td>
+                <td>Closed Requests</td>
+                <td>{{ closed_requests }}</td>
+            </tr>
+
+            <tr>
+                <td>7</td>
+                <td>PM Completed</td>
+                <td>{{ pm_completed }}</td>
+            </tr>
+        </tbody>
+    </table>
+
+    <div class="section-title">
+        Approval
+    </div>
+
+    <table class="signature-table">
+        <tr>
+            <th>Prepared By</th>
+            <th>Reviewed By</th>
+            <th>Approved By</th>
+        </tr>
+
+        <tr>
+            <td>
+                Signature: ____________________
+            </td>
+
+            <td>
+                Signature: ____________________
+            </td>
+
+            <td>
+                Signature: ____________________
+            </td>
+        </tr>
+
+        <tr>
+            <td>
+                Eng. Ibrahem Kamel
+                <br>
+                {{ report_date }}
+            </td>
+
+            <td>
+                Eng. Ibrahem Kamel
+                <br>
+                {{ report_date }}
+            </td>
+
+            <td>
+                Eng. Ibrahem Kamel
+                <br>
+                {{ report_date }}
+            </td>
+        </tr>
+    </table>
+
+    <div class="footer-note">
+        Maintenance Management System
+        <br>
+        Biomedical Engineering Department
+        <br>
+        Powered by Eng. Ibrahem Kamel
+    </div>
+
+    <div class="text-center mt-3 no-print">
+        <button onclick="window.print()"
+                class="btn btn-success">
+            Print Report
+        </button>
+    </div>
+
+</div>
+
+{% endblock %}

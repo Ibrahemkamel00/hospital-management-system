@@ -1,0 +1,107 @@
+{% extends 'cssd/base.html' %}
+{% load cssd_extras %}
+{% block title %}Unit Cleaning Procedure{% endblock %}
+{% block content %}
+<h1 class="fw-bold text-danger mb-1">Welcome, {{ user.get_full_name|default:user.username }} 👋</h1>
+<div class="text-muted fs-5 mb-4">Infection Control System</div>
+
+<div class="card border-0 shadow-sm mb-3">
+    <div class="card-body">
+        <h5 class="fw-bold mb-3">{{ task.clinic_name }} - Cleaning Procedure</h5>
+        <div class="row g-2">
+            <div class="col-md-6"><b>Clinic:</b> {{ task.clinic_name }}</div>
+            <div class="col-md-6"><b>Asset Number:</b> {{ task.asset_number }}</div>
+            <div class="col-md-6"><b>Location:</b> {{ task.location_name }}</div>
+            <div class="col-md-6"><b>Due Date:</b> {{ task.due_date }}</div>
+            <div class="col-md-6"><b>Nurse:</b> {{ task.nurse.get_full_name|default:task.nurse.username }}</div>
+        </div>
+    </div>
+</div>
+
+<form method="post">
+{% csrf_token %}
+<div class="table-responsive">
+    <table class="table table-bordered bg-white align-middle">
+        <thead class="table-danger">
+            <tr>
+                <th style="width:48%">Procedure</th>
+                <th class="text-center" style="width:24%">Status</th>
+                <th style="width:28%">Reason if Not Done</th>
+            </tr>
+        </thead>
+        <tbody>
+        {% for field,label in procedure_items %}
+            {% with done_value=task|get_attr:field reason_field=field|add:'_reason' %}
+            <tr>
+                <td class="fw-semibold">{{ label }}</td>
+                <td class="text-center">
+                    <div class="d-flex justify-content-center gap-3 flex-wrap">
+                        <label class="form-check-label">
+                            <input type="radio"
+                                   name="{{ field }}_status"
+                                   value="done"
+                                   class="form-check-input status-radio"
+                                   data-target="reason-{{ field }}"
+                                   {% if done_value %}checked{% endif %}
+                                   required>
+                            Done
+                        </label>
+                        <label class="form-check-label">
+                            <input type="radio"
+                                   name="{{ field }}_status"
+                                   value="not_done"
+                                   class="form-check-input status-radio"
+                                   data-target="reason-{{ field }}"
+                                   {% if not done_value and task.status == 'COMPLETED' %}checked{% endif %}
+                                   required>
+                            Not Done
+                        </label>
+                    </div>
+                </td>
+                <td>
+                    <textarea name="{{ field }}_reason"
+                              id="reason-{{ field }}"
+                              class="form-control not-done-reason"
+                              rows="2"
+                              placeholder="Write reason"
+                              {% if done_value or task.status != 'COMPLETED' %}style="display:none;"{% endif %}>{{ task|get_attr:reason_field }}</textarea>
+                </td>
+            </tr>
+            {% endwith %}
+        {% endfor %}
+        </tbody>
+    </table>
+</div>
+
+<div class="mb-3">
+    <label class="form-label fw-bold">Comments</label>
+    <textarea class="form-control" name="general_comment" rows="3">{{ task.general_comment }}</textarea>
+</div>
+
+<button class="btn btn-danger">Complete Cleaning & Generate Report</button>
+{% if task.status == 'COMPLETED' %}
+<a href="{% url 'infection_cleaning_report' task.id %}" class="btn btn-outline-secondary">View Report</a>
+{% endif %}
+</form>
+
+<script>
+function updateReasonBox(radio){
+    const targetId = radio.dataset.target;
+    const box = document.getElementById(targetId);
+    if(!box) return;
+    if(radio.checked && radio.value === "not_done"){
+        box.style.display = "block";
+        box.required = true;
+    }else if(radio.checked && radio.value === "done"){
+        box.style.display = "none";
+        box.required = false;
+        box.value = "";
+    }
+}
+
+document.querySelectorAll('.status-radio').forEach(function(radio){
+    radio.addEventListener('change', function(){ updateReasonBox(radio); });
+    if(radio.checked){ updateReasonBox(radio); }
+});
+</script>
+{% endblock %}

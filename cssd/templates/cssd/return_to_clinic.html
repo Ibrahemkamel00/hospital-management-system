@@ -1,0 +1,147 @@
+{% extends 'cssd/base.html' %}
+{% block title %}Return To Clinic{% endblock %}
+
+{% block content %}
+
+<div class="d-flex justify-content-between align-items-center mb-4">
+
+    <div>
+        <h3 class="fw-bold text-success mb-1">
+            Return Request #{{ request_obj.id }}
+        </h3>
+
+        <small class="text-muted">
+            Return sterilized instruments to clinic
+        </small>
+    </div>
+
+</div>
+
+<div class="row mb-4">
+
+    <div class="col-md-6">
+        <div class="card shadow-sm border-0">
+            <div class="card-body">
+
+                <small class="text-muted">
+                    Location
+                </small>
+
+                <h5 class="fw-bold mb-0">
+                    {{ request_obj.location }}
+                </h5>
+
+            </div>
+        </div>
+    </div>
+
+    <div class="col-md-6">
+        <div class="card shadow-sm border-0">
+            <div class="card-body">
+
+                <small class="text-muted">
+                    Status
+                </small>
+
+                <h5 class="mb-0">
+                    <span class="badge bg-primary">
+                        {{ request_obj.status }}
+                    </span>
+                </h5>
+
+            </div>
+        </div>
+    </div>
+
+</div>
+
+<form method="post">
+    {% csrf_token %}
+
+    <div class="table-responsive">
+
+        <table class="table table-hover table-bordered align-middle bg-white shadow-sm">
+
+            <thead class="table-success">
+
+                <tr>
+                    <th>Instrument</th>
+                    <th width="120">Sent</th>
+                    <th width="180">Received By CSSD</th>
+                    <th width="150">Returned Qty</th>
+                </tr>
+
+            </thead>
+
+            <tbody>
+
+                {% for item in items %}
+                <tr>
+
+                    <td class="fw-semibold">
+                        {{ item.instrument_name }}
+                    </td>
+
+                    <td>
+                        {{ item.quantity_sent }}
+                    </td>
+
+                    <td>
+                        {{ item.quantity_received_by_cssd }}
+                    </td>
+
+                    <td>
+
+                        <input
+                            type="number"
+                            class="form-control form-control-sm"
+                            name="returned_{{ item.id }}"
+                            value="{{ item.quantity_received_by_cssd }}"
+                            min="0"
+                        >
+
+                    </td>
+
+                </tr>
+                {% empty %}
+                <tr>
+
+                    <td colspan="4"
+                        class="text-center text-muted py-4">
+
+                        No Instruments Found
+
+                    </td>
+
+                </tr>
+                {% endfor %}
+
+            </tbody>
+
+        </table>
+
+    </div>
+
+    <div class="mt-4 d-flex gap-2">
+
+        <button
+            type="submit"
+            class="btn btn-warning fw-bold">
+
+            Confirm Return To Clinic
+
+        </button>
+
+        <a
+            href="{% url 'cssd_received_requests' %}"
+            class="btn btn-secondary">
+
+            Back
+
+        </a>
+
+    </div>
+
+</form>
+
+{% endblock %}

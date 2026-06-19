@@ -1,0 +1,67 @@
+{% extends 'cssd/base.html' %}
+
+{% block title %}Report Fault{% endblock %}
+
+{% block content %}
+
+<div class="container">
+
+    <div class="card shadow border-0">
+
+        <div class="card-header bg-danger text-white">
+            Report Device Fault
+        </div>
+
+        <div class="card-body">
+
+            <h4 class="mb-3">
+                {{ asset.device_name }}
+            </h4>
+
+            <p>
+                Asset Number:
+                <strong>{{ asset.asset_number }}</strong>
+            </p>
+
+            <form method="post">
+                {% csrf_token %}
+
+                <div class="mb-3">
+                    <label class="form-label">
+                        Your Full Name
+                    </label>
+
+                    <input
+                        type="text"
+                        name="reporter_name"
+                        class="form-control"
+                        required>
+                </div>
+
+                <div class="mb-3">
+                    <label class="form-label">
+                        Fault Description
+                    </label>
+
+                    <textarea
+                        name="fault_description"
+                        class="form-control"
+                        rows="5"
+                        required></textarea>
+                </div>
+
+                <button
+                    type="submit"
+                    class="btn btn-danger">
+                    Submit Fault
+                </button>
+
+            </form>
+
+        </div>
+
+    </div>
+
+</div>
+
+{% endblock %}

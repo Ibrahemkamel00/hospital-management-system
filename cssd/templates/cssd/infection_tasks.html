@@ -1,0 +1,28 @@
+{% extends 'cssd/base.html' %}
+{% block title %}Infection Control Tasks{% endblock %}
+{% block content %}
+<div class="d-flex justify-content-between align-items-center mb-3 flex-wrap gap-2">
+    <div>
+        <h1 class="fw-bold text-danger mb-1">Welcome, {{ user.get_full_name|default:user.username }} 👋</h1>
+        <div class="text-muted fs-5">Infection Control System</div>
+    </div>
+    <button class="btn btn-outline-secondary" onclick="window.print()">Print</button>
+</div>
+<form method="get" class="row g-2 mb-3">
+    <div class="col-md-3"><input type="date" class="form-control" name="from" value="{{ from_date }}"></div>
+    <div class="col-md-3"><input type="date" class="form-control" name="to" value="{{ to_date }}"></div>
+    <div class="col-md-3"><select name="status" class="form-select"><option value="">All Status</option><option value="PENDING" {% if status_filter == 'PENDING' %}selected{% endif %}>Pending</option><option value="COMPLETED" {% if status_filter == 'COMPLETED' %}selected{% endif %}>Completed</option><option value="OVERDUE" {% if status_filter == 'OVERDUE' %}selected{% endif %}>Overdue</option></select></div>
+    <input type="hidden" name="view" value="{{ view_filter }}">
+    <div class="col-md-3"><button class="btn btn-danger w-100">Filter</button></div>
+</form>
+<div class="table-responsive">
+<table class="table table-hover align-middle bg-white rounded shadow-sm overflow-hidden">
+<thead class="table-danger"><tr><th>Clinic</th><th>Asset No.</th><th>Location</th><th>Nurse</th><th>Due Date</th><th>Status</th><th>Action</th></tr></thead>
+<tbody>
+{% for task in tasks %}
+<tr>
+<td>{{ task.clinic_name }}</td><td>{{ task.asset_number }}</td><td>{{ task.location_name }}</td><td>{{ task.nurse.get_full_name|default:task.nurse.username }}</td><td>{{ task.due_date }}</td><td><span class="badge {% if task.status == 'COMPLETED' %}bg-success{% elif task.status == 'OVERDUE' %}bg-danger{% else %}bg-warning text-dark{% endif %}">{{ task.get_status_display }}</span></td><td><a class="btn btn-sm btn-outline-danger" href="{% url 'infection_task_detail' task.id %}">Open</a> {% if task.status == 'COMPLETED' %}<a class="btn btn-sm btn-outline-secondary" href="{% url 'infection_cleaning_report' task.id %}">Report</a>{% endif %}</td>
+</tr>
+{% empty %}<tr><td colspan="7" class="text-center text-muted">No tasks found.</td></tr>{% endfor %}
+</tbody></table></div>
+{% endblock %}

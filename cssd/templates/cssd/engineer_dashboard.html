@@ -1,0 +1,204 @@
+{% extends 'cssd/base.html' %}
+
+{% block title %}Engineer Dashboard{% endblock %}
+
+{% block content %}
+
+<style>
+    .dashboard-title{
+        color:#14532d;
+        font-weight:900;
+        margin-bottom:20px;
+    }
+
+    .location-card{
+        border-radius:14px;
+        overflow:hidden;
+        border:0;
+    }
+
+    .location-card .card-header{
+        background:#1f2937;
+        color:white;
+        font-weight:800;
+    }
+
+    .location-badge{
+        background:#e8f5ef;
+        color:#14532d;
+        border:1px solid #b7dec9;
+        padding:7px 12px;
+        border-radius:20px;
+        font-weight:800;
+        display:inline-block;
+        margin:4px;
+        font-size:12px;
+    }
+
+    .dashboard-link{
+        text-decoration:none;
+        display:block;
+    }
+
+    .kpi-card{
+        border:0;
+        border-radius:16px;
+        min-height:82px;
+        height:82px;
+        display:flex;
+        align-items:center;
+        justify-content:center;
+        box-shadow:0 8px 18px rgba(0,0,0,0.13);
+        transition:all .2s ease;
+        color:white;
+        overflow:hidden;
+    }
+
+    .dashboard-link:hover .kpi-card{
+        transform:translateY(-4px);
+        box-shadow:0 12px 26px rgba(0,0,0,.18);
+    }
+
+    .kpi-title{
+        font-size:12.5px;
+        font-weight:900;
+        margin-bottom:8px;
+        opacity:0.95;
+    }
+
+    .kpi-number{
+        font-size:26px;
+        font-weight:900;
+        line-height:1;
+    }
+
+    .g-total{
+        background:linear-gradient(135deg,#64748b,#334155);
+    }
+
+    .g-open{
+        background:linear-gradient(135deg,#f87171,#b91c1c);
+    }
+
+    .g-progress{
+        background:linear-gradient(135deg,#fde047,#f59e0b);
+        color:#3f2f00;
+    }
+
+    .g-parts{
+        background:linear-gradient(135deg,#fb7185,#be123c);
+    }
+
+    .g-pm{
+        background:linear-gradient(135deg,#38bdf8,#0369a1);
+    }
+
+    .g-closed{
+        background:linear-gradient(135deg,#16a34a,#166534);
+    }
+</style>
+
+<div class="container-fluid">
+
+    <h2 class="dashboard-title mb-1">
+        Welcome, {{ user.get_full_name|default:user.username }} 👋
+    </h2>
+    <small class="text-muted d-block mb-3">Maintenance Dashboard</small>
+
+    <div class="card shadow-sm location-card mb-4">
+        <div class="card-header">
+            My Locations
+        </div>
+
+        <div class="card-body bg-white">
+            {% for location in my_locations %}
+                <span class="location-badge">
+                    {{ location.name }}
+                </span>
+            {% empty %}
+                <span class="text-danger fw-bold">
+                    No Locations Assigned
+                </span>
+            {% endfor %}
+        </div>
+    </div>
+
+    <div class="row row-cols-2 row-cols-md-3 row-cols-xl-5 g-3">
+
+        <div class="col">
+            <a href="{% url 'maintenance_requests' %}"
+               class="dashboard-link">
+                <div class="kpi-card g-total">
+                    <div class="text-center">
+                        <div class="kpi-title">Total Requests</div>
+                        <div class="kpi-number">{{ total_requests }}</div>
+                    </div>
+                </div>
+            </a>
+        </div>
+
+        <div class="col">
+            <a href="{% url 'maintenance_requests' %}?status=OPEN"
+               class="dashboard-link">
+                <div class="kpi-card g-open">
+                    <div class="text-center">
+                        <div class="kpi-title">Open Requests</div>
+                        <div class="kpi-number">{{ open_requests }}</div>
+                    </div>
+                </div>
+            </a>
+        </div>
+
+        <div class="col">
+            <a href="{% url 'maintenance_requests' %}?status=IN_PROGRESS"
+               class="dashboard-link">
+                <div class="kpi-card g-progress">
+                    <div class="text-center">
+                        <div class="kpi-title">In Progress</div>
+                        <div class="kpi-number">{{ in_progress }}</div>
+                    </div>
+                </div>
+            </a>
+        </div>
+
+        <div class="col">
+            <a href="{% url 'maintenance_requests' %}?status=WAITING_PARTS"
+               class="dashboard-link">
+                <div class="kpi-card g-parts">
+                    <div class="text-center">
+                        <div class="kpi-title">Waiting Parts</div>
+                        <div class="kpi-number">{{ waiting_parts }}</div>
+                    </div>
+                </div>
+            </a>
+        </div>
+
+        <div class="col">
+            <a href="{% url 'pm_dashboard' %}"
+               class="dashboard-link">
+                <div class="kpi-card g-pm">
+                    <div class="text-center">
+                        <div class="kpi-title">PM Due</div>
+                        <div class="kpi-number">{{ pm_due }}</div>
+                    </div>
+                </div>
+            </a>
+        </div>
+
+        <div class="col">
+            <a href="{% url 'maintenance_requests' %}?status=CLOSED"
+               class="dashboard-link">
+                <div class="kpi-card g-closed">
+                    <div class="text-center">
+                        <div class="kpi-title">Closed</div>
+                        <div class="kpi-number">{{ closed_requests }}</div>
+                    </div>
+                </div>
+            </a>
+        </div>
+
+    </div>
+
+</div>
+
+{% endblock %}

@@ -1,0 +1,354 @@
+{% load static %}
+
+<!DOCTYPE html>
+<html>
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1">
+
+    <title>{% block title %}Hospital System{% endblock %}</title>
+
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/css/bootstrap.min.css" rel="stylesheet">
+    <link rel="manifest" href="{% static 'manifest.json' %}">
+
+    <meta name="theme-color" content="#00695c">
+    <meta name="apple-mobile-web-app-capable" content="yes">
+    <meta name="apple-mobile-web-app-title" content="UQU System">
+    <meta name="apple-mobile-web-app-status-bar-style" content="default">
+
+    <link rel="apple-touch-icon" href="{% static 'images/app_icon.png' %}">
+
+    <style>
+        body{
+            background:
+                linear-gradient(rgba(255,255,255,0.60), rgba(255,255,255,0.60)),
+                url("{% static 'images/hospital_bg.jpg' %}");
+            background-size: cover;
+            background-position: center;
+            background-repeat: no-repeat;
+            background-attachment: fixed;
+            min-height: 100vh;
+        }
+
+        .main-card{
+    background: rgba(255,255,255,0.15);
+    backdrop-filter: blur(8px);
+    border-radius:20px;
+    padding:40px;
+    max-width:1200px;
+    margin:auto;
+}
+
+        .header-area{
+            position: relative;
+            overflow: hidden;
+            background:
+                linear-gradient(
+                    90deg,
+                    rgba(0,105,92,0.18),
+                    rgba(255,255,255,0.96),
+                    rgba(0,105,92,0.18)
+                );
+            border-bottom: 5px solid #00695c;
+        }
+
+        .header-area::before{
+            content:"";
+            position:absolute;
+            top:50%;
+            left:50%;
+            width:420px;
+            height:420px;
+            transform:translate(-50%,-50%);
+            background-image:url("{% static 'images/hospital_logo.png' %}");
+            background-repeat:no-repeat;
+            background-position:center;
+            background-size:contain;
+            opacity:0.02;
+            z-index:0;
+        }
+
+        .header-area::after{
+            content:"";
+            position:absolute;
+            left:0;
+            right:0;
+            bottom:0;
+            height:2px;
+            background:linear-gradient(
+                90deg,
+                transparent,
+                #00695c,
+                transparent
+            );
+        }
+
+        .header-content{
+            position:relative;
+            z-index:2;
+            display:flex;
+            align-items:center;
+            justify-content:space-between;
+            gap:18px;
+            min-height:135px;
+        }
+
+        .header-title-box{
+            text-align:center;
+            flex:1;
+        }
+
+        .header-logo{
+    height:120px;
+    width:140px;
+    object-fit:contain;
+    background:rgba(255,255,255,0.85);
+    padding:8px;
+    border-radius:8px;
+    box-shadow:0 3px 10px rgba(0,0,0,0.08);
+}
+
+        .header-logo:hover{
+            transform:scale(1.04);
+        }
+
+        .system-title{
+            color:#00695c;
+            font-weight:800;
+            font-size:42px;
+            line-height:1.1;
+            text-align:center;
+            text-shadow:0 2px 8px rgba(0,105,92,0.15);
+        }
+
+        .system-subtitle{
+            margin-top:10px;
+            font-size:20px;
+            color:#333;
+            font-weight:700;
+            text-align:center;
+        }
+
+        .user-bar{
+            background: #00695c;
+            color: white;
+            padding: 8px 16px;
+            text-align: right;
+            font-size: 14px;
+        }
+
+        .top-link{
+            color: white;
+            text-decoration: none;
+            margin-left: 10px;
+            font-weight: bold;
+        }
+
+        .top-link:hover{
+            color: #ddd;
+        }
+
+        .logout-btn{
+            color: white;
+            text-decoration: none;
+            margin-left: 10px;
+            font-weight: bold;
+        }
+
+        footer{
+            margin-top: 30px;
+            text-align: center;
+            padding: 12px;
+            font-size: 15px;
+            font-weight: 600;
+            color: #00695c;
+        }
+
+        @media (max-width: 768px){
+
+            body{
+                font-size: 13px;
+                background-attachment: scroll;
+            }
+
+            .user-bar{
+                padding: 6px 10px;
+                text-align: center;
+                font-size: 12px;
+            }
+
+            .header-content{
+                min-height:90px;
+                gap:8px;
+            }
+
+            .header-area::before{
+                width:240px;
+                height:240px;
+                opacity:0.07;
+            }
+
+            .header-logo{
+                height:45px;
+                width:58px;
+                padding:3px;
+                border-radius:6px;
+            }
+
+            .system-title{
+                font-size:20px;
+            }
+
+            .system-subtitle{
+                font-size:10px;
+                margin-top:4px;
+            }
+
+            .main-card{
+                padding: 10px !important;
+                margin: 4px !important;
+                border-radius: 10px;
+            }
+
+            .container-fluid{
+                padding-left: 6px !important;
+                padding-right: 6px !important;
+            }
+
+            .btn{
+                font-size: 12px;
+                padding: 6px 8px;
+            }
+
+            .card-body{
+                padding: 10px;
+            }
+
+            .table{
+                font-size: 11px;
+            }
+
+            h1,h2,h3,h4,h5{
+                font-size: 90%;
+            }
+
+            footer{
+                font-size: 12px;
+                margin-top: 20px;
+            }
+        }
+    </style>
+</head>
+
+<body>
+
+{% if user.is_authenticated %}
+<div class="user-bar">
+
+    👤 {{ user.username }}
+
+    |
+
+    <a href="{% url 'notifications' %}" class="top-link" id="notifications-link">
+        🔔
+        <span id="notifications-badge"
+              class="badge bg-danger"
+              {% if unread_notifications_count == 0 %}style="display:none;"{% endif %}>
+            {{ unread_notifications_count }}
+        </span>
+    </a>
+
+    |
+
+    <a href="{{ back_dashboard_url }}" class="top-link">
+    Back to Dashboard
+</a>
+
+    |
+    {% if not is_engineer_user %}
+|
+<a href="{% url 'system_selection' %}" class="top-link">
+    Back to Systems
+</a>
+{% endif %}
+
+    <form method="post"
+          action="{% url 'logout' %}"
+          style="display:inline;">
+        {% csrf_token %}
+
+        <button type="submit"
+                class="logout-btn"
+                style="background:none;border:none;">
+            Logout
+        </button>
+
+    </form>
+
+</div>
+{% endif %}
+
+<nav class="navbar header-area shadow-sm mb-4">
+    <div class="container header-content">
+
+        <img src="{% static 'images/hospital_logo.png' %}"
+             class="header-logo"
+             alt="Hospital Logo">
+
+        <div class="header-title-box">
+            <div class="system-title">
+                {{ system_title }}
+            </div>
+
+            <div class="system-subtitle">
+                {{ system_subtitle }}
+            </div>
+        </div>
+
+        <img src="{% static 'images/company_logo.png' %}"
+             class="header-logo"
+             alt="Company Logo">
+
+    </div>
+</nav>
+
+<div class="container-fluid px-2 px-md-4">
+    <div class="main-card">
+        {% block content %}
+        {% endblock %}
+    </div>
+</div>
+
+<footer>
+    Powered by Eng. Ibrahem Kamel
+</footer>
+
+
+{% if user.is_authenticated %}
+<script>
+function refreshNotificationsBadge(){
+    fetch("{% url 'notifications_count' %}", {
+        headers: {"X-Requested-With": "XMLHttpRequest"}
+    })
+    .then(response => response.json())
+    .then(data => {
+        const badge = document.getElementById("notifications-badge");
+        if(!badge) return;
+
+        if(data.unread_count > 0){
+            badge.innerText = data.unread_count;
+            badge.style.display = "inline-block";
+        }else{
+            badge.style.display = "none";
+        }
+    })
+    .catch(() => {});
+}
+
+refreshNotificationsBadge();
+setInterval(refreshNotificationsBadge, 5000);
+</script>
+{% endif %}
+
+</body>
+</html>

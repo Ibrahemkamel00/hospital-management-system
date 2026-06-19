@@ -1,0 +1,146 @@
+{% extends 'cssd/base.html' %}
+{% load static %}
+
+{% block title %}QR Sticker{% endblock %}
+
+{% block content %}
+
+<style>
+    .qr-sticker{
+        width:9cm;
+        height:9cm;
+        background:rgb(255, 255, 255);
+        border:3px solid #00695c;
+        border-radius:14px;
+        padding:8px;
+        margin:auto;
+        text-align:center;
+        color:#111;
+        box-sizing:border-box;
+    }
+
+    .qr-header{
+        display:flex;
+        justify-content:space-between;
+        align-items:center;
+        margin-bottom:0px;
+    }
+
+    .qr-logo{
+        width:2.1cm;
+        height:1.7cm;
+        object-fit:contain;
+    }
+
+    .qr-title{
+        font-weight:900;
+        color:#00695c;
+        font-size:13px;
+        line-height:1.1;
+    }
+
+    .qr-device{
+        font-weight:900;
+        font-size:14px;
+        margin-top:-1px;
+    }
+
+    .qr-asset{
+        font-size:12px;
+        font-weight:800;
+        margin-bottom:-1px;
+    }
+
+    .qr-code{
+        width:5.3cm;
+        height:5.3cm;
+        margin:-1px auto;
+        display:block;
+    }
+
+    .qr-footer{
+        font-size:13px;
+        font-weight:850;
+        color:#00695c;
+        line-height:1.2;
+        margin-top:-15px;
+    }
+
+    .print-btn{
+        margin-top:20px;
+        text-align:center;
+    }
+
+    @media print{
+        .user-bar,
+        nav,
+        footer,
+        .print-btn{
+            display:none !important;
+        }
+
+        body{
+            background:white !important;
+        }
+
+        .main-card{
+            background:white !important;
+            box-shadow:none !important;
+            padding:0 !important;
+            margin:0 !important;
+        }
+
+        @page{
+            size:9cm 9cm;
+            margin:0;
+        }
+
+        .qr-sticker{
+            margin:0;
+            border-radius:0;
+        }
+    }
+</style>
+
+<div class="qr-sticker">
+
+    <div class="qr-header">
+        <img src="{% static 'images/hospital_logo.png' %}"
+             class="qr-logo">
+
+        <div class="qr-title">
+            Biomedical Engineering<br>
+            Department
+            
+        </div>
+
+        <img src="{% static 'images/company_logo.png' %}"
+             class="qr-logo">
+    </div>
+
+    <div class="qr-device">
+        {{ asset.device_name }}
+    </div>
+
+    <div class="qr-asset">
+        Asset No: {{ asset.asset_number }}
+    </div>
+
+    <img src="data:image/png;base64,{{ qr_code }}"
+         class="qr-code">
+
+    <div class="qr-footer">
+        Scan to Report Fault<br>
+        {{ asset.location|default:"Medical Equipment" }}
+    </div>
+
+</div>
+
+<div class="print-btn no-print">
+    <button onclick="window.print()"
+            class="btn btn-success">
+        Print QR Sticker
+    </button>
+</div>
+
+{% endblock %}

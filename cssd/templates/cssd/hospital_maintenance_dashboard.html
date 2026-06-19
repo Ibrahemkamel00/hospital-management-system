@@ -1,0 +1,57 @@
+{% extends 'cssd/base.html' %}
+
+{% block title %}Hospital Manager - Maintenance{% endblock %}
+
+{% block content %}
+<style>
+    .hm-title{font-weight:900;color:#0f766e;margin-bottom:10px;}
+    .hm-grid .col{display:flex;}
+    .hm-card{border:0;border-radius:16px;min-height:92px;color:#fff;box-shadow:0 10px 22px rgba(15,23,42,.14);overflow:hidden;position:relative;transition:.18s ease;width:100%;}
+    .hm-link{text-decoration:none;display:block;width:100%;}
+    .hm-link:hover .hm-card{transform:translateY(-3px);box-shadow:0 14px 28px rgba(15,23,42,.20);}
+    .hm-card::after{content:"";position:absolute;right:-30px;top:-30px;width:82px;height:82px;border-radius:50%;background:rgba(255,255,255,.16);}
+    .hm-body{padding:12px 14px;position:relative;z-index:1;}
+    .hm-icon{font-size:21px;margin-bottom:5px;}
+    .hm-label{font-size:12.5px;font-weight:900;opacity:.98;line-height:1.15;}
+    .hm-value{font-size:28px;font-weight:900;line-height:1;margin-top:7px;}
+    .g-assets{background:linear-gradient(135deg,#2563eb,#06b6d4);}
+    .g-total{background:linear-gradient(135deg,#334155,#0f172a);}
+    .g-open{background:linear-gradient(135deg,#ef4444,#991b1b);}
+    .g-closed{background:linear-gradient(135deg,#22c55e,#15803d);}
+    .g-out{background:linear-gradient(135deg,#111827,#475569);}
+    .g-parts{background:linear-gradient(135deg,#7c3aed,#4c1d95);}
+    .g-approval{background:linear-gradient(135deg,#f59e0b,#d97706);color:#111827;}
+    .g-pm{background:linear-gradient(135deg,#0ea5e9,#0369a1);}
+    .g-qr{background:linear-gradient(135deg,#fb923c,#c2410c);}
+    .g-progress{background:linear-gradient(135deg,#fde047,#f59e0b);color:#111827;}
+    .g-report{background:linear-gradient(135deg,#10b981,#047857);}
+    .g-location{background:linear-gradient(135deg,#64748b,#334155);}
+    .g-availability{background:linear-gradient(135deg,#34d399,#047857);}
+    .g-mttr{background:linear-gradient(135deg,#60a5fa,#2563eb);}
+    .g-mtbf{background:linear-gradient(135deg,#22d3ee,#0891b2);}
+</style>
+
+<div class="container-fluid">
+    <h2 class="hm-title">Welcome, {{ user.get_full_name|default:user.username }} 👋</h2>
+    <h5 class="text-success fw-bold mb-2">Hospital Manager - Maintenance Dashboard</h5>
+    <p class="text-muted mb-4">Read only dashboard. Click any card to view filtered details and print reports.</p>
+
+    <div class="row row-cols-2 row-cols-md-3 row-cols-xl-5 g-3 hm-grid">
+        <div class="col"><a href="{% url 'clinic_assets' %}" class="hm-link"><div class="hm-card g-assets"><div class="hm-body"><div class="hm-icon">🏥</div><div class="hm-label">Total Assets</div><div class="hm-value">{{ total_assets }}</div></div></div></a></div>
+        <div class="col"><a href="{% url 'maintenance_requests' %}" class="hm-link"><div class="hm-card g-total"><div class="hm-body"><div class="hm-icon">📋</div><div class="hm-label">Total Requests</div><div class="hm-value">{{ total_requests }}</div></div></div></a></div>
+        <div class="col"><a href="{% url 'maintenance_requests' %}" class="hm-link"><div class="hm-card g-open"><div class="hm-body"><div class="hm-icon">🚨</div><div class="hm-label">Open Requests</div><div class="hm-value">{{ open_requests }}</div></div></div></a></div>
+        <div class="col"><a href="{% url 'maintenance_requests' %}?status=CLOSED" class="hm-link"><div class="hm-card g-closed"><div class="hm-body"><div class="hm-icon">✅</div><div class="hm-label">Closed Requests</div><div class="hm-value">{{ closed_requests }}</div></div></div></a></div>
+        <div class="col"><a href="{% url 'maintenance_requests' %}?status=IN_PROGRESS" class="hm-link"><div class="hm-card g-progress"><div class="hm-body"><div class="hm-icon">🔧</div><div class="hm-label">In Progress</div><div class="hm-value">{{ in_progress }}</div></div></div></a></div>
+        <div class="col"><a href="{% url 'clinic_assets' %}?status=OUT_OF_SERVICE" class="hm-link"><div class="hm-card g-out"><div class="hm-body"><div class="hm-icon">⛔</div><div class="hm-label">Out Of Service</div><div class="hm-value">{{ out_of_service }}</div></div></div></a></div>
+        <div class="col"><a href="{% url 'maintenance_requests' %}?status=WAITING_PARTS" class="hm-link"><div class="hm-card g-parts"><div class="hm-body"><div class="hm-icon">📦</div><div class="hm-label">Waiting Spare Parts</div><div class="hm-value">{{ waiting_spare_parts }}</div></div></div></a></div>
+        <div class="col"><a href="{% url 'maintenance_requests' %}?approval=pending" class="hm-link"><div class="hm-card g-approval"><div class="hm-body"><div class="hm-icon">🖊️</div><div class="hm-label">Pending Approval</div><div class="hm-value">{{ pending_approval }}</div></div></div></a></div>
+        <div class="col"><a href="{% url 'pm_dashboard' %}" class="hm-link"><div class="hm-card g-pm"><div class="hm-body"><div class="hm-icon">🗓️</div><div class="hm-label">PM Due</div><div class="hm-value">{{ pm_due }}</div></div></div></a></div>
+        <div class="col"><a href="{% url 'maintenance_requests' %}?source=QR" class="hm-link"><div class="hm-card g-qr"><div class="hm-body"><div class="hm-icon">📱</div><div class="hm-label">QR Reports</div><div class="hm-value">{{ qr_reports }}</div></div></div></a></div>
+        <div class="col"><a href="{% url 'locations_overview' %}" class="hm-link"><div class="hm-card g-location"><div class="hm-body"><div class="hm-icon">📍</div><div class="hm-label">Locations</div><div class="hm-value">↗</div></div></div></a></div>
+        <div class="col"><a href="{% url 'maintenance_kpi_detail' 'availability' %}" class="hm-link"><div class="hm-card g-availability"><div class="hm-body"><div class="hm-icon">📈</div><div class="hm-label">Availability</div><div class="hm-value">{{ availability }}%</div></div></div></a></div>
+        <div class="col"><a href="{% url 'maintenance_kpi_detail' 'mttr_days' %}" class="hm-link"><div class="hm-card g-mttr"><div class="hm-body"><div class="hm-icon">⏱️</div><div class="hm-label">MTTR</div><div class="hm-value">{{ mttr_days }}d</div></div></div></a></div>
+        <div class="col"><a href="{% url 'maintenance_kpi_detail' 'mtbf_days' %}" class="hm-link"><div class="hm-card g-mtbf"><div class="hm-body"><div class="hm-icon">🔁</div><div class="hm-label">MTBF</div><div class="hm-value">{{ mtbf_days }}d</div></div></div></a></div>
+        <div class="col"><a href="{% url 'reports_center' %}" class="hm-link"><div class="hm-card g-report"><div class="hm-body"><div class="hm-icon">📊</div><div class="hm-label">Report Center</div><div class="hm-value">↗</div></div></div></a></div>
+    </div>
+</div>
+{% endblock %}

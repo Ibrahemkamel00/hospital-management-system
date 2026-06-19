@@ -1,0 +1,70 @@
+{% extends 'cssd/base.html' %}
+
+{% block title %}Clinic Confirmation{% endblock %}
+
+{% block content %}
+
+من{% if error %}
+    <div class="alert alert-danger">
+        {{ error }}
+    </div>
+{% endif %}
+
+<div class="card shadow border-0">
+
+    <div class="card-body">
+
+        <h3 class="fw-bold text-primary mb-4">
+            Clinic Confirmation
+        </h3>
+
+        <p>
+            <strong>Request:</strong>
+            #{{ maintenance_request.id }}
+        </p>
+
+        <p>
+            <strong>Asset:</strong>
+            {{ maintenance_request.asset.device_name }}
+            -
+            {{ maintenance_request.asset.asset_number }}
+        </p>
+
+        <p>
+            <strong>Work Done:</strong>
+            {{ maintenance_request.work_done }}
+        </p>
+
+        <form method="post">
+            {% csrf_token %}
+
+            <label class="fw-bold mb-2">
+                Clinic Notes
+            </label>
+
+            <textarea name="note"
+                      class="form-control mb-3"
+                      rows="4"
+                      placeholder="Write notes if needed"></textarea>
+
+            <button type="submit"
+                    name="action"
+                    value="fixed"
+                    class="btn btn-success">
+                Device Fixed
+            </button>
+
+            <button type="submit"
+                    name="action"
+                    value="not_fixed"
+                    class="btn btn-danger">
+                Still Not Working
+            </button>
+
+        </form>
+
+    </div>
+
+</div>
+
+{% endblock %}

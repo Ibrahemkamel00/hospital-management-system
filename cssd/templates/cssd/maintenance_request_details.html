@@ -1,0 +1,513 @@
+{% extends 'cssd/base.html' %}
+
+{% block title %}Maintenance Request Details{% endblock %}
+
+{% block content %}
+
+<h3 class="fw-bold text-success mb-4">
+    Maintenance Request Details
+</h3>
+
+<div class="card shadow-sm border-0 mb-4">
+    <div class="card-body">
+
+        <div class="d-flex justify-content-between align-items-center mb-3">
+            <h4 class="fw-bold text-success mb-0">
+                MR #{{ maintenance_request.id }}
+            </h4>
+
+            <div>
+
+                {% if is_admin_user %}
+                    <a href="{% url 'manager_take_over_request' maintenance_request.id %}"
+                       class="btn btn-outline-dark">
+                        Manager Take Over
+                    </a>
+                {% endif %}
+
+                {% if is_engineer_user or is_admin_user %}
+
+                    {% if maintenance_request.status == "OPEN" %}
+                        <a href="{% url 'start_maintenance_request' maintenance_request.id %}"
+                           class="btn btn-warning">
+                            Start Work
+                        </a>
+                    {% endif %}
+
+                    {% if maintenance_request.status != "CLOSED" and maintenance_request.status != "WAITING_CONFIRMATION" and maintenance_request.status != "WAITING_PARTS" %}
+                        <a href="{% url 'complete_maintenance_request' maintenance_request.id %}"
+                           class="btn btn-success">
+                            Work Done / Close Request
+                        </a>
+                    {% endif %}
+
+                {% endif %}
+
+                {% if maintenance_request.status == "WAITING_PART_APPROVAL" and not is_engineer_user and not user.is_superuser %}
+                    <a href="{% url 'approve_spare_parts' maintenance_request.id %}"
+                       class="btn btn-success">
+                        Approve Spare Parts
+                    </a>
+
+                    <a href="{% url 'reject_spare_parts' maintenance_request.id %}"
+                       class="btn btn-danger">
+                        Reject Spare Parts
+                    </a>
+                {% endif %}
+
+                {% if maintenance_request.status == "WAITING_CONFIRMATION" and not is_engineer_user and not user.is_superuser %}
+                    <a href="{% url 'clinic_confirm_maintenance' maintenance_request.id %}"
+                       class="btn btn-primary">
+                        Confirm Repair
+                    </a>
+                {% endif %}
+
+                {% if maintenance_request.status == "WAITING_PARTS" or maintenance_request.status == "CLOSED" %}
+
+                    {% if maintenance_request.report_approved %}
+                        <a href="{% url 'service_report' maintenance_request.id %}"
+                           class="btn btn-success">
+                            📄 Open Approved Report
+                        </a>
+
+                    {% else %}
+
+                        {% if is_admin_user %}
+                            <a href="{% url 'approve_report' maintenance_request.id %}"
+                               class="btn btn-success">
+                                ✅ Approve Report
+                            </a>
+
+                            <a href="{% url 'reject_report' maintenance_request.id %}"
+                               class="btn btn-danger">
+                                ❌ Reject Report
+                            </a>
+                        {% else %}
+                            <button class="btn btn-secondary" disabled>
+                                ⏳ Pending Manager Approval
+                            </button>
+                        {% endif %}
+
+                    {% endif %}
+
+                {% endif %}
+
+            </div>
+        </div>
+
+        <table class="table table-bordered bg-white">
+
+            <tr>
+                <th width="240">Asset</th>
+                <td>
+                    {{ maintenance_request.asset.asset_number }}
+                    -
+                    {{ maintenance_request.asset.device_name }}
+                </td>
+            </tr>
+
+            <tr>
+                <th>Fault Description</th>
+                <td>{{ maintenance_request.fault_description }}</td>
+            </tr>
+
+            <tr>
+                <th>Priority</th>
+                <td>{{ maintenance_request.priority }}</td>
+            </tr>
+
+            <tr>
+                <th>Status</th>
+                <td>
+                    {% if maintenance_request.status == "OPEN" %}
+                        <span class="badge"
+                              style="background:#f8b4b4;color:#7f1d1d;">
+                            Open
+                        </span>
+
+                    {% elif maintenance_request.status == "IN_PROGRESS" %}
+                        <span class="badge bg-warning text-dark">
+                            In Progress
+                        </span>
+
+                    {% elif maintenance_request.status == "WAITING_PART_APPROVAL" %}
+                        <span class="badge bg-warning text-dark">
+                            Waiting Part Approval
+                        </span>
+
+                    {% elif maintenance_request.status == "WAITING_PARTS" %}
+                        <span class="badge bg-danger">
+                            ⚠ Waiting Parts
+                        </span>
+
+                        {% if not maintenance_request.report_approved %}
+                            <span class="badge bg-secondary ms-2">
+                                Report Pending Manager Approval
+                            </span>
+                        {% else %}
+                            <span class="badge bg-info ms-2">
+                                Report Approved
+                            </span>
+                        {% endif %}
+
+                    {% elif maintenance_request.status == "WAITING_CONFIRMATION" %}
+                        <span class="badge bg-primary">
+                            Waiting Confirmation
+                        </span>
+
+                    {% elif maintenance_request.status == "CLOSED" %}
+                        <span class="badge bg-success">
+                            ✓ Closed
+                        </span>
+
+                        {% if not maintenance_request.report_approved %}
+                            <span class="badge bg-secondary ms-2">
+                                Report Pending Manager Approval
+                            </span>
+                        {% else %}
+                            <span class="badge bg-info ms-2">
+                                Report Approved
+                            </span>
+                        {% endif %}
+
+                    {% else %}
+                        <span class="badge bg-secondary">
+                            {{ maintenance_request.status }}
+                        </span>
+                    {% endif %}
+                </td>
+            </tr>
+
+            <tr>
+                <th>Reported By</th>
+                <td>
+                    {% if maintenance_request.request_source == "QR" %}
+                        {{ maintenance_request.external_reporter_name }}
+                        <span class="badge bg-info text-dark">
+                            QR Public Report
+                        </span>
+                    {% else %}
+                        {{ maintenance_request.reported_by|default:"-" }}
+                    {% endif %}
+                </td>
+            </tr>
+
+            <tr>
+                <th>Assigned Engineer</th>
+                <td>{{ maintenance_request.assigned_to|default:"-" }}</td>
+            </tr>
+
+            <tr>
+                <th>Reported At</th>
+                <td>{{ maintenance_request.reported_at }}</td>
+            </tr>
+
+            <tr>
+                <th>Closed At</th>
+                <td>{{ maintenance_request.closed_at|default:"-" }}</td>
+            </tr>
+
+            <tr>
+                <th>Repair Duration</th>
+                <td>
+                    {% if maintenance_request.closed_at %}
+                        {{ maintenance_request.reported_at|timesince:maintenance_request.closed_at }}
+                    {% else %}
+                        Still Open
+                    {% endif %}
+                </td>
+            </tr>
+
+        </table>
+
+    </div>
+</div>
+
+
+{% if is_admin_user %}
+<div class="card shadow-sm border-0 mb-4">
+    <div class="card-header bg-dark text-white fw-bold">Maintenance Manager Actions</div>
+    <div class="card-body">
+        <form method="post" action="{% url 'reassign_maintenance_request' maintenance_request.id %}" class="row g-2 align-items-end">
+            {% csrf_token %}
+            <div class="col-md-8">
+                <label class="form-label fw-bold">Reassign Engineer</label>
+                <select name="engineer" class="form-select" required>
+                    <option value="">Select Engineer</option>
+                    {% for engineer in engineers %}
+                        <option value="{{ engineer.id }}" {% if maintenance_request.assigned_to_id == engineer.id %}selected{% endif %}>
+                            {{ engineer.get_full_name|default:engineer.username }}
+                        </option>
+                    {% endfor %}
+                </select>
+            </div>
+            <div class="col-md-4">
+                <button class="btn btn-dark w-100">Reassign</button>
+            </div>
+        </form>
+    </div>
+</div>
+{% endif %}
+
+<div class="card shadow-sm border-0 mb-4">
+    <div class="card-body">
+
+        <h4 class="fw-bold text-success mb-3">
+            Corrective Action
+        </h4>
+
+        <table class="table table-bordered bg-white">
+
+            <tr>
+                <th width="240">Work Done</th>
+                <td>{{ maintenance_request.work_done|default:"-" }}</td>
+            </tr>
+
+            <tr>
+                <th>After Spare Parts Received</th>
+                <td>{{ maintenance_request.after_spare_part_work|default:"-" }}</td>
+            </tr>
+
+            <tr>
+                <th>Requested Spare Parts</th>
+                <td>
+                    {% if maintenance_request.spare_parts.all %}
+
+                        <table class="table table-sm mb-0">
+                            <thead>
+                                <tr>
+                                    <th>Part</th>
+                                    <th>Qty</th>
+                                    <th>Status</th>
+                                </tr>
+                            </thead>
+
+                            <tbody>
+                                {% for part in maintenance_request.spare_parts.all %}
+                                <tr>
+                                    <td>{{ part.requested_part_name }}</td>
+                                    <td>{{ part.requested_quantity }}</td>
+                                    <td>
+                                        {% if part.is_installed %}
+                                            <span class="badge bg-success">
+                                                Installed
+                                            </span>
+                                        {% else %}
+                                            <span class="badge bg-danger">
+                                                Pending
+                                            </span>
+                                        {% endif %}
+                                    </td>
+                                </tr>
+                                {% endfor %}
+                            </tbody>
+                        </table>
+
+                    {% else %}
+                        -
+                    {% endif %}
+                </td>
+            </tr>
+
+            <tr>
+                <th>Notes</th>
+                <td>{{ maintenance_request.notes|default:"-" }}</td>
+            </tr>
+
+            <tr>
+                <th>Clinic Feedback</th>
+                <td>{{ maintenance_request.clinic_feedback|default:"-" }}</td>
+            </tr>
+
+            <tr>
+                <th>Report Approval</th>
+                <td>
+                    {% if maintenance_request.report_approved %}
+                        <span class="badge bg-success">
+                            Approved
+                        </span>
+                        by
+                        <strong>{{ maintenance_request.report_approved_by }}</strong>
+                        at
+                        {{ maintenance_request.report_approved_at|date:"Y-m-d H:i" }}
+
+                    {% elif maintenance_request.report_rejected %}
+                        <span class="badge bg-danger">
+                            Rejected
+                        </span>
+                        Returned to engineer
+
+                    {% else %}
+                        <span class="badge bg-secondary">
+                            Pending Manager Approval
+                        </span>
+                    {% endif %}
+                </td>
+            </tr>
+
+        </table>
+
+    </div>
+</div>
+
+<div class="card shadow-sm border-0 mb-4">
+    <div class="card-body">
+
+        <h4 class="fw-bold text-success mb-3">
+            Request Timeline
+        </h4>
+
+        {% for item in maintenance_request.timeline.all %}
+            <div class="border-start border-3 border-success ps-3 mb-3">
+                <div class="fw-bold">
+                    {{ item.action }}
+                </div>
+
+                <div class="text-muted small">
+                    By:
+                    {% if item.created_by %}
+                        {{ item.created_by }}
+                    {% elif maintenance_request.request_source == "QR" %}
+                        {{ maintenance_request.external_reporter_name }}
+                    {% else %}
+                        -
+                    {% endif %}
+                    |
+                    {{ item.created_at|date:"Y-m-d H:i" }}
+                </div>
+
+                {% if item.note %}
+                    <div class="mt-1">
+                        {{ item.note }}
+                    </div>
+                {% endif %}
+            </div>
+        {% empty %}
+            <p class="text-muted">
+                No timeline yet.
+            </p>
+        {% endfor %}
+
+    </div>
+</div>
+
+{% if maintenance_request.status == "WAITING_PARTS" or maintenance_request.status == "CLOSED" %}
+
+<div class="card shadow-sm border-0 mt-4">
+
+    <div class="card-header bg-dark text-white fw-bold">
+        Maintenance Manager Report Approval
+    </div>
+
+    <div class="card-body">
+
+        {% if maintenance_request.report_approved %}
+
+            <div class="alert alert-success">
+                ✅ Report Approved By:
+                <strong>{{ maintenance_request.report_approved_by }}</strong>
+                <br>
+                Date:
+                {{ maintenance_request.report_approved_at|date:"Y-m-d H:i" }}
+            </div>
+
+            <a href="{% url 'service_report' maintenance_request.id %}"
+               class="btn btn-success">
+                📄 Open Approved Report
+            </a>
+
+        {% elif maintenance_request.report_rejected %}
+
+            <div class="alert alert-danger">
+                ❌ Report rejected by Maintenance Manager.
+                <br>
+                Request returned to engineer for rework.
+            </div>
+
+        {% else %}
+
+            {% if is_admin_user %}
+
+                <a href="{% url 'approve_report' maintenance_request.id %}"
+                   class="btn btn-success">
+                    ✅ Approve Report
+                </a>
+
+                <a href="{% url 'reject_report' maintenance_request.id %}"
+                   class="btn btn-danger">
+                    ❌ Reject Report
+                </a>
+
+            {% else %}
+
+                <button class="btn btn-secondary" disabled>
+                    ⏳ Pending Manager Approval
+                </button>
+
+            {% endif %}
+
+        {% endif %}
+
+    </div>
+
+</div>
+
+{% endif %}
+
+
+<div class="card shadow-sm border-0 mb-4">
+    <div class="card-header bg-secondary text-white fw-bold">📎 Attachments History</div>
+    <div class="card-body">
+        <form method="post" action="{% url 'add_maintenance_attachment' maintenance_request.id %}" enctype="multipart/form-data" class="row g-2 mb-3">
+            {% csrf_token %}
+            <div class="col-md-5"><input type="file" name="file" class="form-control" required></div>
+            <div class="col-md-5"><input type="text" name="description" class="form-control" placeholder="Description optional"></div>
+            <div class="col-md-2"><button class="btn btn-secondary w-100">Upload</button></div>
+        </form>
+        <div class="table-responsive">
+            <table class="table table-sm table-bordered bg-white">
+                <thead><tr><th>File</th><th>Description</th><th>Uploaded By</th><th>Date</th></tr></thead>
+                <tbody>
+                    {% for attachment in maintenance_request.attachments.all %}
+                    <tr>
+                        <td><a href="{{ attachment.file.url }}" target="_blank">{{ attachment.file.name }}</a></td>
+                        <td>{{ attachment.description|default:"-" }}</td>
+                        <td>{{ attachment.uploaded_by|default:"-" }}</td>
+                        <td>{{ attachment.uploaded_at|date:"Y-m-d H:i" }}</td>
+                    </tr>
+                    {% empty %}
+                    <tr><td colspan="4" class="text-muted text-center">No attachments.</td></tr>
+                    {% endfor %}
+                </tbody>
+            </table>
+        </div>
+        <div class="small text-muted">Attachments are saved inside the request only and do not appear in the official report.</div>
+    </div>
+</div>
+
+<div class="card shadow-sm border-0 mb-4">
+    <div class="card-header bg-info text-dark fw-bold">❓ Inquiries & Discussions</div>
+    <div class="card-body">
+        {% if can_reply_inquiry %}
+        <form method="post" action="{% url 'add_maintenance_inquiry' maintenance_request.id %}" class="mb-3">
+            {% csrf_token %}
+            <label class="form-label fw-bold">Add Reply / Inquiry</label>
+            <textarea name="message" class="form-control mb-2" rows="3" required placeholder="Write your inquiry or reply..."></textarea>
+            <button class="btn btn-info">Send</button>
+        </form>
+        {% else %}
+            <div class="alert alert-light border text-muted">No inquiry is open for this request.</div>
+        {% endif %}
+        {% for inquiry in maintenance_request.inquiries.all %}
+            <div class="border-start border-3 border-info ps-3 mb-3">
+                <div class="fw-bold">{{ inquiry.created_by|default:"-" }}</div>
+                <div class="text-muted small">{{ inquiry.created_at|date:"Y-m-d H:i" }}</div>
+                <div class="mt-1">{{ inquiry.message|linebreaksbr }}</div>
+            </div>
+        {% empty %}
+            <p class="text-muted mb-0">No inquiries yet.</p>
+        {% endfor %}
+    </div>
+</div>
+
+{% endblock %}

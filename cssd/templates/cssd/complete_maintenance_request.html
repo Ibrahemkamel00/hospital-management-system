@@ -1,0 +1,334 @@
+{% extends 'cssd/base.html' %}
+
+{% block title %}Work Done{% endblock %}
+
+{% block content %}
+
+<h3 class="fw-bold text-success mb-4">
+    Complete Maintenance Request
+</h3>
+
+<div class="card shadow-sm border-0">
+    <div class="card-body">
+
+        <h5 class="fw-bold text-success mb-4">
+            MR #{{ maintenance_request.id }}
+            -
+            {{ maintenance_request.asset.asset_number }}
+        </h5>
+
+        {% if error %}
+            <div class="alert alert-danger">
+                {{ error }}
+            </div>
+        {% endif %}
+
+        <form method="post">
+            {% csrf_token %}
+
+            <div class="mb-3">
+                <label class="form-label fw-bold">
+                    Work Done
+                </label>
+
+                {% if maintenance_request.status == "WAITING_PARTS" %}
+
+<label class="form-label fw-bold">
+    Initial Work Done
+</label>
+
+<textarea
+    class="form-control"
+    rows="5"
+    readonly>{{ maintenance_request.work_done }}</textarea>
+
+<br>
+
+<label class="form-label fw-bold">
+    After Spare Parts Received
+</label>
+
+<textarea
+    name="after_spare_part_work"
+    class="form-control"
+    rows="5"></textarea>
+
+{% else %}
+
+<label class="form-label fw-bold">
+    Work Done
+</label>
+
+<textarea
+    name="work_done"
+    class="form-control"
+    rows="5"
+    required>{{ maintenance_request.work_done }}</textarea>
+
+{% endif %}
+            </div>
+
+            <div class="mb-4">
+                <label class="form-label fw-bold">
+                    Current Action
+                </label>
+
+                <select
+                    name="action"
+                    id="actionSelect"
+                    class="form-select"
+                    required>
+
+                    <option value="" selected>
+                        Select Action
+                    </option>
+
+                    <option value="repaired_without_spare">
+                        Repaired Without Spare Parts
+                    </option>
+
+                    <option value="need_spare_part_working">
+    Need Spare Part - Machine Working
+</option>
+
+<option value="need_spare_part_stopped">
+    Need Spare Part - Machine Stopped
+</option>
+
+                    <option value="spare_part_installed">
+                        Spare Part Installed
+                    </option>
+
+                </select>
+            </div>
+
+            <div class="mb-4 d-none" id="requestedPartsBox">
+
+                <label class="form-label fw-bold">
+                    Requested Spare Parts
+                </label>
+
+                <table class="table table-bordered bg-white" id="requestedPartsTable">
+                    <thead class="table-dark">
+                        <tr>
+                            <th>Part Name</th>
+                            <th width="120">Qty</th>
+                            <th width="80">Action</th>
+                        </tr>
+                    </thead>
+
+                    <tbody>
+                        <tr>
+                            <td>
+                                <input
+                                    type="text"
+                                    name="requested_part_name[]"
+                                    class="form-control requested-part-name"
+                                    placeholder="Write requested spare part">
+                            </td>
+
+                            <td>
+                                <input
+                                    type="number"
+                                    name="requested_quantity[]"
+                                    class="form-control requested-quantity"
+                                    min="1"
+                                    value="1">
+                            </td>
+
+                            <td class="text-center">
+                                <button type="button"
+                                        class="btn btn-danger btn-sm"
+                                        onclick="removePartRow(this)">
+                                    X
+                                </button>
+                            </td>
+                        </tr>
+                    </tbody>
+                </table>
+
+                <button type="button"
+                        class="btn btn-outline-success btn-sm"
+                        onclick="addPartRow()">
+                    + Add Spare Part
+                </button>
+
+            </div>
+
+            <div class="mb-4 d-none" id="installedPartsBox">
+
+                <label class="form-label fw-bold">
+                    Install Requested Spare Parts
+                </label>
+
+                <table class="table table-bordered bg-white">
+                    <thead class="table-dark">
+                        <tr>
+                            <th>Requested Part</th>
+                            <th width="100">Req. Qty</th>
+                            <th>Installed Part</th>
+                            <th width="120">Installed Qty</th>
+                        </tr>
+                    </thead>
+
+                    <tbody>
+                        {% for part in maintenance_request.spare_parts.all %}
+                            <tr>
+                                <td>
+                                    {{ part.requested_part_name }}
+                                </td>
+
+                                <td>
+                                    {{ part.requested_quantity }}
+                                </td>
+
+                                <td>
+                                    <input
+                                        type="text"
+                                        name="installed_part_name_{{ part.id }}"
+                                        class="form-control installed-part-name"
+                                        placeholder="Write installed part name"
+                                        value="{{ part.installed_part_name }}">
+                                </td>
+
+                                <td>
+                                    <input
+                                        type="number"
+                                        name="installed_quantity_{{ part.id }}"
+                                        class="form-control installed-quantity"
+                                        min="0"
+                                        value="{{ part.installed_quantity }}">
+                                </td>
+                            </tr>
+                        {% empty %}
+                            <tr>
+                                <td colspan="4" class="text-center text-muted">
+                                    No requested spare parts found
+                                </td>
+                            </tr>
+                        {% endfor %}
+                    </tbody>
+                </table>
+
+            </div>
+
+            <button type="submit"
+                    class="btn btn-success">
+                Save
+            </button>
+
+            <a href="{% url 'maintenance_request_details' maintenance_request.id %}"
+               class="btn btn-secondary">
+                Cancel
+            </a>
+
+        </form>
+
+    </div>
+</div>
+
+<script>
+    const actionSelect = document.getElementById("actionSelect");
+    const requestedPartsBox = document.getElementById("requestedPartsBox");
+    const installedPartsBox = document.getElementById("installedPartsBox");
+
+    function updateActionFields(){
+        const action = actionSelect.value;
+
+        requestedPartsBox.classList.add("d-none");
+        installedPartsBox.classList.add("d-none");
+
+        document.querySelectorAll(".requested-part-name").forEach(function(input){
+            input.required = false;
+        });
+
+        document.querySelectorAll(".requested-quantity").forEach(function(input){
+            input.required = false;
+        });
+
+        document.querySelectorAll(".installed-part-name").forEach(function(input){
+            input.required = false;
+        });
+
+        document.querySelectorAll(".installed-quantity").forEach(function(input){
+            input.required = false;
+        });
+
+        if(
+    action === "need_spare_part_working" ||
+    action === "need_spare_part_stopped"
+){
+            requestedPartsBox.classList.remove("d-none");
+
+            document.querySelectorAll(".requested-part-name").forEach(function(input){
+                input.required = true;
+            });
+
+            document.querySelectorAll(".requested-quantity").forEach(function(input){
+                input.required = true;
+            });
+        }
+
+        if(action === "spare_part_installed"){
+            installedPartsBox.classList.remove("d-none");
+
+            document.querySelectorAll(".installed-part-name").forEach(function(input){
+                input.required = true;
+            });
+
+            document.querySelectorAll(".installed-quantity").forEach(function(input){
+                input.required = true;
+            });
+        }
+    }
+
+    function addPartRow(){
+        const tableBody = document.querySelector("#requestedPartsTable tbody");
+
+        const row = document.createElement("tr");
+
+        row.innerHTML = `
+            <td>
+                <input
+                    type="text"
+                    name="requested_part_name[]"
+                    class="form-control requested-part-name"
+                    placeholder="Write requested spare part">
+            </td>
+
+            <td>
+                <input
+                    type="number"
+                    name="requested_quantity[]"
+                    class="form-control requested-quantity"
+                    min="1"
+                    value="1">
+            </td>
+
+            <td class="text-center">
+                <button type="button"
+                        class="btn btn-danger btn-sm"
+                        onclick="removePartRow(this)">
+                    X
+                </button>
+            </td>
+        `;
+
+        tableBody.appendChild(row);
+
+        updateActionFields();
+    }
+
+    function removePartRow(button){
+        const rows = document.querySelectorAll("#requestedPartsTable tbody tr");
+
+        if(rows.length > 1){
+            button.closest("tr").remove();
+        }
+    }
+
+    actionSelect.addEventListener("change", updateActionFields);
+    updateActionFields();
+</script>
+
+{% endblock %}

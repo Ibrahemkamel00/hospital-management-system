@@ -1,0 +1,165 @@
+{% extends 'cssd/base.html' %}
+
+{% block title %}Engineers Performance{% endblock %}
+
+{% block content %}
+
+<style>
+    .stat-card{
+        border:0;
+        border-radius:16px;
+        color:white;
+        box-shadow:0 8px 18px rgba(0,0,0,.12);
+    }
+
+    .stat-card h6{
+        font-size:13px;
+        font-weight:800;
+    }
+
+    .stat-card h2{
+        font-size:28px;
+        font-weight:900;
+        margin:0;
+    }
+
+    .g-total{background:linear-gradient(135deg,#3b82f6,#1d4ed8);}
+    .g-best{background:linear-gradient(135deg,#22c55e,#15803d);}
+    .g-average{background:linear-gradient(135deg,#06b6d4,#0e7490);}
+</style>
+
+<div class="container mt-4" style="max-width:1100px;">
+
+    <h3 class="fw-bold text-primary mb-4">
+        👨‍🔧 Engineers Performance
+    </h3>
+
+    <div class="row g-3 mb-4">
+
+        <div class="col-md-4">
+            <div class="card stat-card g-total">
+                <div class="card-body text-center">
+                    <h6>Total Engineers</h6>
+                    <h2>{{ engineers_count }}</h2>
+                </div>
+            </div>
+        </div>
+
+        <div class="col-md-4">
+            <div class="card stat-card g-best">
+                <div class="card-body text-center">
+                    <h6>Best Engineer</h6>
+                    <h2>{{ best_engineer }}</h2>
+                </div>
+            </div>
+        </div>
+
+        <div class="col-md-4">
+            <div class="card stat-card g-average">
+                <div class="card-body text-center">
+                    <h6>Average Performance</h6>
+                    <h2>{{ average_performance }}%</h2>
+                </div>
+            </div>
+        </div>
+
+    </div>
+
+    <div class="card shadow-sm border-0">
+        <div class="card-body">
+
+            <div class="table-responsive">
+                <table class="table table-bordered table-striped align-middle">
+
+                    <thead class="table-dark">
+                        <tr>
+                            <th width="70">Rank</th>
+                            <th>Engineer</th>
+                            <th>Total</th>
+                            <th>Open</th>
+                            <th>In Progress</th>
+                            <th>Waiting Parts</th>
+                            <th>Closed</th>
+                            <th width="240">Performance</th>
+                        </tr>
+                    </thead>
+
+                    <tbody>
+
+                    {% for row in engineer_stats %}
+
+                        <tr {% if forloop.counter == 1 %}class="table-success"{% endif %}>
+
+                            <td class="text-center fw-bold">
+                                {% if forloop.counter == 1 %}
+                                    🥇
+                                {% elif forloop.counter == 2 %}
+                                    🥈
+                                {% elif forloop.counter == 3 %}
+                                    🥉
+                                {% else %}
+                                    {{ forloop.counter }}
+                                {% endif %}
+                            </td>
+
+                            <td class="fw-bold">
+                                {{ row.engineer.get_full_name|default:row.engineer.username }}
+                            </td>
+
+                            <td><span class="badge bg-secondary">{{ row.total }}</span></td>
+
+                            <td><span class="badge bg-danger">{{ row.open }}</span></td>
+
+                            <td><span class="badge bg-warning text-dark">{{ row.in_progress }}</span></td>
+
+                            <td><span class="badge bg-info text-dark">{{ row.waiting_parts }}</span></td>
+
+                            <td><span class="badge bg-success">{{ row.closed }}</span></td>
+
+                            <td>
+                                <div class="progress"
+                                     style="height:28px; border-radius:15px; overflow:hidden;">
+
+                                    <div class="progress-bar fw-bold
+                                        {% if row.completion_rate >= 90 %}
+                                            bg-success
+                                        {% elif row.completion_rate >= 70 %}
+                                            bg-warning text-dark
+                                        {% else %}
+                                            bg-danger
+                                        {% endif %}"
+                                        role="progressbar"
+                                        style="width: {{ row.completion_rate|default:0 }}%;"
+                                        aria-valuenow="{{ row.completion_rate|default:0 }}"
+                                        aria-valuemin="0"
+                                        aria-valuemax="100">
+
+                                        {{ row.completion_rate|default:0 }}%
+
+                                    </div>
+                                </div>
+                            </td>
+
+                        </tr>
+
+                    {% empty %}
+
+                        <tr>
+                            <td colspan="8" class="text-center text-muted py-4">
+                                No Engineers Found
+                            </td>
+                        </tr>
+
+                    {% endfor %}
+
+                    </tbody>
+
+                </table>
+            </div>
+
+        </div>
+    </div>
+
+</div>
+
+{% endblock %}

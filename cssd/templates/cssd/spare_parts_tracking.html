@@ -1,0 +1,82 @@
+{% extends 'cssd/base.html' %}
+
+{% block title %}Spare Parts Tracking{% endblock %}
+
+{% block content %}
+
+<h3 class="fw-bold text-success mb-4">
+    Spare Parts Tracking
+</h3>
+
+<div class="card shadow-sm border-0">
+    <div class="card-body">
+
+        <div class="table-responsive">
+
+            <table class="table table-bordered table-striped align-middle">
+                <thead class="table-dark">
+                    <tr>
+                        <th>MR</th>
+                        <th>Asset</th>
+                        <th>Requested Part</th>
+                        <th>Req Qty</th>
+                        <th>Installed Part</th>
+                        <th>Inst Qty</th>
+                        <th>Status</th>
+                        <th>Engineer</th>
+                    </tr>
+                </thead>
+
+                <tbody>
+                {% for part in spare_parts %}
+                    <tr>
+                        <td>
+                            <a href="{% url 'maintenance_request_details' part.maintenance_request.id %}"
+                               class="fw-bold text-success text-decoration-none">
+                                #{{ part.maintenance_request.id }}
+                            </a>
+                        </td>
+
+                        <td>
+                            {{ part.maintenance_request.asset.asset_number }}
+                            -
+                            {{ part.maintenance_request.asset.device_name }}
+                        </td>
+
+                        <td>{{ part.requested_part_name }}</td>
+                        <td>{{ part.requested_quantity }}</td>
+                        <td>{{ part.installed_part_name|default:"-" }}</td>
+                        <td>{{ part.installed_quantity }}</td>
+
+                        <td>
+                            {% if part.is_installed %}
+                                <span class="badge bg-success">Installed</span>
+                            {% else %}
+                                <span class="badge bg-danger">Waiting</span>
+                            {% endif %}
+                        </td>
+
+                        <td>
+                            {{ part.maintenance_request.assigned_to|default:"-" }}
+                        </td>
+                    </tr>
+                {% empty %}
+                    <tr>
+                        <td colspan="8" class="text-center text-muted py-4">
+                            No spare parts found
+                        </td>
+                    </tr>
+                {% endfor %}
+                </tbody>
+            </table>
+
+        </div>
+
+        <a href="{% url 'asset_list' %}" class="btn btn-secondary">
+            Back
+        </a>
+
+    </div>
+</div>
+
+{% endblock %}

@@ -1,0 +1,39 @@
+{% extends 'cssd/base.html' %}
+
+{% block title %}Hospital Manager - CSSD{% endblock %}
+
+{% block content %}
+<style>
+    .hm-title{font-weight:900;color:#0f766e;margin-bottom:22px;}
+    .hm-card{border:0;border-radius:16px;min-height:92px;color:#fff;box-shadow:0 15px 32px rgba(15,23,42,.16);overflow:hidden;position:relative;transition:.18s ease;}
+    .hm-link{text-decoration:none;display:block;height:100%;}
+    .hm-link:hover .hm-card{transform:translateY(-4px);}
+    .hm-card::after{content:"";position:absolute;right:-35px;top:-35px;width:82px;height:82px;border-radius:50%;background:rgba(255,255,255,.16);}
+    .hm-body{padding:12px 14px;position:relative;z-index:1;}
+    .hm-icon{font-size:21px;margin-bottom:5px;}
+    .hm-label{font-size:12.5px;font-weight:800;opacity:.96;}
+    .hm-value{font-size:28px;font-weight:900;line-height:1;margin-top:8px;}
+    .g-total{background:linear-gradient(135deg,#2563eb,#06b6d4);}
+    .g-open{background:linear-gradient(135deg,#ef4444,#991b1b);}
+    .g-sent{background:linear-gradient(135deg,#f59e0b,#d97706);color:#111827;}
+    .g-received{background:linear-gradient(135deg,#0ea5e9,#0369a1);}
+    .g-returned{background:linear-gradient(135deg,#7c3aed,#4c1d95);}
+    .g-closed{background:linear-gradient(135deg,#22c55e,#15803d);}
+    .g-report{background:linear-gradient(135deg,#10b981,#047857);}
+</style>
+
+<div class="container-fluid">
+    <h2 class="hm-title">Hospital Manager - CSSD Dashboard</h2>
+    <p class="text-muted mb-4">Read only dashboard. Click any card to view filtered CSSD requests.</p>
+
+    <div class="row row-cols-2 row-cols-md-3 row-cols-xl-5 g-3">
+        <div class="col"><a href="{% url 'all_requests' %}" class="hm-link"><div class="hm-card g-total"><div class="hm-body"><div class="hm-icon">📋</div><div class="hm-label">Total CSSD Requests</div><div class="hm-value">{{ total_requests }}</div></div></div></a></div>
+        <div class="col"><a href="{% url 'all_requests' %}" class="hm-link"><div class="hm-card g-open"><div class="hm-body"><div class="hm-icon">🔓</div><div class="hm-label">Open CSSD Requests</div><div class="hm-value">{{ open_requests }}</div></div></div></a></div>
+        <div class="col"><a href="{% url 'all_requests' %}?status=SENT_TO_CSSD" class="hm-link"><div class="hm-card g-sent"><div class="hm-body"><div class="hm-icon">➡️</div><div class="hm-label">Sent To CSSD</div><div class="hm-value">{{ sent }}</div></div></div></a></div>
+        <div class="col"><a href="{% url 'all_requests' %}?status=RECEIVED_BY_CSSD" class="hm-link"><div class="hm-card g-received"><div class="hm-body"><div class="hm-icon">🧼</div><div class="hm-label">Received By CSSD</div><div class="hm-value">{{ received }}</div></div></div></a></div>
+        <div class="col"><a href="{% url 'all_requests' %}?status=RETURNED_TO_CLINIC" class="hm-link"><div class="hm-card g-returned"><div class="hm-body"><div class="hm-icon">↩️</div><div class="hm-label">Waiting Clinic Confirmation</div><div class="hm-value">{{ returned }}</div></div></div></a></div>
+        <div class="col"><a href="{% url 'all_requests' %}?status=CLOSED" class="hm-link"><div class="hm-card g-closed"><div class="hm-body"><div class="hm-icon">✅</div><div class="hm-label">Completed Today</div><div class="hm-value">{{ closed_today }}</div></div></div></a></div>
+        <div class="col"><a href="{% url 'reports' %}" class="hm-link"><div class="hm-card g-report"><div class="hm-body"><div class="hm-icon">📊</div><div class="hm-label">CSSD Statistics Report</div><div class="hm-value">↗</div></div></div></a></div>
+    </div>
+</div>
+{% endblock %}

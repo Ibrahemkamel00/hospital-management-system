@@ -1,0 +1,23 @@
+{% extends 'cssd/base.html' %}
+{% block title %}Infection Control Dashboard{% endblock %}
+{% block content %}
+<div class="d-flex justify-content-between align-items-center mb-4 flex-wrap gap-2">
+    <div>
+        <h1 class="fw-bold text-danger mb-1">Welcome, {{ user.get_full_name|default:user.username }} 👋</h1>
+        <div class="text-muted fs-5">Infection Control System</div>
+    </div>
+</div>
+
+<style>
+.ic-card{border:0;border-radius:18px;color:#fff;box-shadow:0 8px 22px rgba(0,0,0,.12);transition:.2s;min-height:112px;text-decoration:none;display:block}.ic-card:hover{transform:translateY(-4px);color:#fff}.ic-num{font-size:30px;font-weight:900}.ic-label{font-size:15px;font-weight:800}.ic-blue{background:linear-gradient(135deg,#1976d2,#64b5f6)}.ic-yellow{background:linear-gradient(135deg,#f9a825,#ffd54f)}.ic-red{background:linear-gradient(135deg,#c62828,#ef5350)}.ic-green{background:linear-gradient(135deg,#2e7d32,#66bb6a)}.ic-purple{background:linear-gradient(135deg,#6a1b9a,#ab47bc)}.ic-dark{background:linear-gradient(135deg,#263238,#607d8b)}
+</style>
+
+<div class="row g-3">
+    <div class="col-6 col-md"><a class="ic-card ic-blue p-3" href="{% url 'infection_tasks' %}"><div class="ic-num">{{ assigned_count }}</div><div class="ic-label">My Units</div></a></div>
+    <div class="col-6 col-md"><a class="ic-card ic-green p-3" href="{% url 'infection_tasks' %}?view=today"><div class="ic-num">{{ due_today_count }}</div><div class="ic-label">Due Today</div></a></div>
+    <div class="col-6 col-md"><a class="ic-card ic-yellow p-3" href="{% url 'infection_tasks' %}?view=tomorrow"><div class="ic-num">{{ due_tomorrow_count }}</div><div class="ic-label">Due Tomorrow</div></a></div>
+    <div class="col-6 col-md"><a class="ic-card ic-red p-3" href="{% url 'infection_tasks' %}?view=overdue"><div class="ic-num">{{ overdue_count }}</div><div class="ic-label">Overdue</div></a></div>
+    <div class="col-6 col-md"><a class="ic-card ic-purple p-3" href="{% url 'infection_tasks' %}?view=completed"><div class="ic-num">{{ completed_count }}</div><div class="ic-label">Completed</div></a></div>
+    <div class="col-6 col-md"><a class="ic-card ic-dark p-3" href="{% url 'infection_tasks' %}?view=completed"><div class="ic-num">📄</div><div class="ic-label">Reports</div></a></div>
+</div>
+{% endblock %}

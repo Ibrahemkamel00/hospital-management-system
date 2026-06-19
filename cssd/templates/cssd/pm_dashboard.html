@@ -1,0 +1,99 @@
+{% extends 'cssd/base.html' %}
+
+{% block title %}Preventive Maintenance{% endblock %}
+
+{% block content %}
+
+<h3 class="fw-bold text-primary mb-4">
+    Preventive Maintenance
+</h3>
+
+<div class="card shadow-sm border-0">
+    <div class="card-body">
+
+        <div class="table-responsive">
+
+            <table class="table table-bordered table-striped align-middle">
+
+                <thead class="table-dark">
+                    <tr>
+                        <th>Asset No.</th>
+                        <th>Device</th>
+                        <th>Last PM</th>
+                        <th>Next PM</th>
+                        <th>Status</th>
+                        <th>Action</th>
+                    </tr>
+                </thead>
+
+                <tbody>
+
+                {% for asset in assets %}
+
+                    <tr
+                    {% if asset.next_pm_date < today %}
+                        class="table-danger"
+                    {% elif asset.next_pm_date <= pm_due_date %}
+                        class="table-warning"
+                    {% endif %}
+                    >
+
+                        <td>{{ asset.asset_number }}</td>
+
+                        <td>{{ asset.device_name }}</td>
+
+                        <td>
+                            {{ asset.last_pm_date|default:"Never" }}
+                        </td>
+
+                        <td>
+                            {{ asset.next_pm_date|default:"Not Scheduled" }}
+                        </td>
+
+                        <td>
+                            {% if asset.next_pm_date < today %}
+                                <span class="badge bg-danger">
+                                    Overdue
+                                </span>
+
+                            {% elif asset.next_pm_date <= pm_due_date %}
+                                <span class="badge bg-warning text-dark">
+                                    Due Soon
+                                </span>
+
+                            {% else %}
+                                <span class="badge bg-success">
+                                    Scheduled
+                                </span>
+                            {% endif %}
+                        </td>
+
+                        <td>
+                            <a href="{% url 'perform_pm' asset.id %}"
+                               class="btn btn-primary btn-sm">
+                                Perform PM
+                            </a>
+                        </td>
+
+                    </tr>
+
+                {% empty %}
+
+                    <tr>
+                        <td colspan="6" class="text-center text-muted py-4">
+                            No preventive maintenance due within the next 4 days.
+                        </td>
+                    </tr>
+
+                {% endfor %}
+
+                </tbody>
+
+            </table>
+
+        </div>
+
+    </div>
+</div>
+
+{% endblock %}

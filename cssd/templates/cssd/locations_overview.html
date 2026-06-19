@@ -1,0 +1,32 @@
+{% extends 'cssd/base.html' %}
+{% block title %}Locations{% endblock %}
+{% block content %}
+<style>
+.loc-card{border:0;border-radius:18px;box-shadow:0 10px 24px rgba(15,23,42,.12);transition:.18s;background:#fff;}
+.loc-card:hover{transform:translateY(-3px);box-shadow:0 16px 32px rgba(15,23,42,.18);}
+.loc-name{font-weight:900;color:#0f766e;font-size:18px;}
+.metric{font-size:12px;color:#64748b;font-weight:800;}.metric strong{color:#0f172a;font-size:18px;}
+</style>
+<h3 class="fw-bold text-success mb-3">Locations</h3>
+<div class="row row-cols-1 row-cols-md-2 row-cols-xl-3 g-3">
+{% for row in rows %}
+<div class="col">
+  <a href="{% url 'location_assets' row.location.id %}" class="text-decoration-none">
+    <div class="card loc-card h-100"><div class="card-body">
+      <div class="loc-name">📍 {{ row.location.name }}</div>
+      <div class="text-muted small mb-3">{{ row.location.get_group_type_display }}</div>
+      <div class="row text-center g-2">
+        <div class="col-4"><div class="metric">Assets<br><strong>{{ row.assets_count }}</strong></div></div>
+        <div class="col-4"><div class="metric">Open<br><strong>{{ row.open_requests }}</strong></div></div>
+        <div class="col-4"><div class="metric">Avail.<br><strong>{{ row.availability }}%</strong></div></div>
+        <div class="col-6"><div class="metric">MTTR<br><strong>{{ row.mttr_days }}d</strong></div></div>
+        <div class="col-6"><div class="metric">MTBF<br><strong>{{ row.mtbf_days }}d</strong></div></div>
+      </div>
+    </div></div>
+  </a>
+</div>
+{% empty %}
+<div class="col"><div class="alert alert-info">No locations found.</div></div>
+{% endfor %}
+</div>
+{% endblock %}

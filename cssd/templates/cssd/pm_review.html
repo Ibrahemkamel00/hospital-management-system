@@ -1,0 +1,135 @@
+{% extends 'cssd/base.html' %}
+
+{% block title %}PM Review{% endblock %}
+
+{% block content %}
+
+<h3 class="fw-bold text-success mb-4">
+    PPM Review
+</h3>
+
+<div class="card shadow-sm border-0 mb-4">
+    <div class="card-body">
+
+        <h5 class="fw-bold text-success mb-3">
+            Asset Information
+        </h5>
+
+        <table class="table table-bordered bg-white">
+            <tr>
+                <th>Asset Number</th>
+                <td>{{ pm.asset.asset_number }}</td>
+                <th>Device Name</th>
+                <td>{{ pm.asset.device_name }}</td>
+            </tr>
+
+            <tr>
+                <th>Engineer</th>
+                <td>{{ pm.performed_by|default:"-" }}</td>
+                <th>PM Date</th>
+                <td>{{ pm.performed_at|date:"Y-m-d H:i" }}</td>
+            </tr>
+
+            <tr>
+                <th>Next PM Date</th>
+                <td>{{ pm.next_pm_date|default:"-" }}</td>
+                <th>Status</th>
+                <td>
+                    <span class="badge bg-warning text-dark">
+                        {{ pm.status }}
+                    </span>
+                </td>
+            </tr>
+        </table>
+
+    </div>
+</div>
+
+<div class="card shadow-sm border-0 mb-4">
+    <div class="card-body">
+
+        <h5 class="fw-bold text-success mb-3">
+            PPM Checklist
+        </h5>
+
+        <table class="table table-bordered bg-white">
+            <thead>
+                <tr>
+                    <th>System</th>
+                    <th>Component</th>
+                    <th>Inspection Points</th>
+                    <th>Result</th>
+                    <th>Spare Part</th>
+                    <th>Qty</th>
+                </tr>
+            </thead>
+
+            <tbody>
+                {% for item in items %}
+                <tr>
+                    <td>{{ item.system }}</td>
+                    <td>{{ item.component }}</td>
+                    <td>{{ item.inspection_points }}</td>
+                    <td>
+                        {% if item.result == "OK" %}
+                            <span class="badge bg-success">OK</span>
+                        {% else %}
+                            <span class="badge bg-danger">NOT OK</span>
+                        {% endif %}
+                    </td>
+                    <td>{{ item.requested_spare_part|default:"-" }}</td>
+                    <td>{{ item.requested_quantity }}</td>
+                </tr>
+                {% empty %}
+                <tr>
+                    <td colspan="6" class="text-center text-muted">
+                        No checklist items found.
+                    </td>
+                </tr>
+                {% endfor %}
+            </tbody>
+        </table>
+
+    </div>
+</div>
+
+<div class="card shadow-sm border-0">
+    <div class="card-body">
+
+        <h5 class="fw-bold text-success mb-3">
+            Clinic Confirmation
+        </h5>
+
+        <form method="post">
+            {% csrf_token %}
+
+            <div class="mb-3">
+                <label class="form-label fw-bold">
+                    Clinic Comment
+                </label>
+
+                <textarea name="clinic_comment"
+                          class="form-control"
+                          rows="3"
+                          placeholder="Write comment if needed"></textarea>
+            </div>
+
+            <button type="submit"
+                    name="action"
+                    value="confirm"
+                    class="btn btn-success">
+                Confirm PPM
+            </button>
+
+            <button type="submit"
+                    name="action"
+                    value="reject"
+                    class="btn btn-danger">
+                Reject PPM
+            </button>
+        </form>
+
+    </div>
+</div>
+
+{% endblock %}

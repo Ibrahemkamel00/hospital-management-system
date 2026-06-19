@@ -1,0 +1,382 @@
+{% extends 'cssd/base.html' %}
+
+{% block title %}Asset Details{% endblock %}
+
+{% block content %}
+
+<h3 class="fw-bold text-success mb-4">
+    Asset Details
+</h3>
+
+<div class="card shadow-sm border-0 mb-4">
+    <div class="card-body">
+
+        <div class="d-flex justify-content-between align-items-center mb-3">
+            <h4 class="fw-bold text-success mb-0">
+                {{ asset.device_name }}
+            </h4>
+
+            <div>
+               {% if is_engineer_user or user.is_superuser %}
+
+    {% if not asset.next_pm_date or asset.next_pm_date <= today %}
+        <a href="{% url 'perform_pm' asset.id %}"
+           class="btn btn-primary">
+            ✅ Perform PM
+        </a>
+    {% else %}
+        <button class="btn btn-secondary" disabled>
+            Next PM: {{ asset.next_pm_date }}
+        </button>
+    {% endif %}
+
+{% endif %}
+
+            {% if user.is_superuser or is_admin_user %}
+
+<a href="{% url 'asset_qr_sticker' asset.id %}"
+   class="btn btn-dark">
+    🖨 Print QR Sticker
+</a>
+
+{% endif %}
+
+            {% if asset.status == "ACTIVE" or asset.status == "ACTIVE_NEED_SPARE" %}
+
+<a href="{% url 'report_fault' asset.id %}"
+   class="btn btn-danger">
+    🛠 Report Fault
+</a>
+
+{% elif asset.status == "WAITING_PARTS" %}
+
+<div class="alert alert-warning mb-0">
+    ⚠ Waiting for Spare Parts
+</div>
+
+{% elif asset.status == "UNDER_MAINTENANCE" %}
+
+<div class="alert alert-info mb-0">
+    🔧 Under Maintenance
+</div>
+
+{% endif %}
+            </div>
+        </div>
+
+        <table class="table table-bordered bg-white">
+            <tr>
+                <th width="220">Asset Number</th>
+                <td>{{ asset.asset_number }}</td>
+            </tr>
+
+            <tr>
+                <th>Manufacturer</th>
+                <td>{{ asset.manufacturer|default:"-" }}</td>
+            </tr>
+
+            <tr>
+                <th>Model</th>
+                <td>{{ asset.model|default:"-" }}</td>
+            </tr>
+
+            <tr>
+                <th>Serial Number</th>
+                <td>{{ asset.serial_number|default:"-" }}</td>
+            </tr>
+
+            <tr>
+                <th>Department</th>
+                <td>{{ asset.department|default:"-" }}</td>
+            </tr>
+
+            <tr>
+                <th>Location</th>
+                <td>{{ asset.location|default:"-" }}</td>
+            </tr>
+
+            <tr>
+                <th>Installation Date</th>
+                <td>{{ asset.installation_date|default:"-" }}</td>
+            </tr>
+
+            <tr>
+                <th>Status</th>
+                <td>
+                    {% if asset.status == "ACTIVE" %}
+    <span class="badge bg-success">Active</span>
+
+{% elif asset.status == "ACTIVE_NEED_SPARE" %}
+    <span class="badge bg-info text-dark">
+        Active - Need Spare Part
+    </span>
+
+{% elif asset.status == "UNDER_MAINTENANCE" %}
+    <span class="badge bg-warning text-dark">Under Maintenance</span>
+
+{% elif asset.status == "WAITING_PARTS" %}
+    <span class="badge bg-danger">
+        Waiting Spare Parts - Machine Stopped
+    </span>
+
+{% elif asset.status == "OUT_OF_SERVICE" %}
+    <span class="badge bg-danger">Out Of Service</span>
+
+{% else %}
+    <span class="badge bg-secondary">{{ asset.status }}</span>
+{% endif %}
+                </td>
+            </tr>
+
+            <tr>
+                <th>Last PM</th>
+                <td>{{ asset.last_pm_date|default:"-" }}</td>
+            </tr>
+
+            <tr>
+                <th>Next PM</th>
+                <td>
+                    {% if asset.next_pm_date %}
+                        {{ asset.next_pm_date }}
+                    {% else %}
+                        <span class="badge bg-secondary">Not Scheduled</span>
+                    {% endif %}
+                </td>
+            </tr>
+
+            <tr>
+                <th>Notes</th>
+                <td>{{ asset.notes|default:"-" }}</td>
+            </tr>
+        </table>
+
+    </div>
+</div>
+
+<div class="card shadow-sm border-0 mb-4">
+    <div class="card-body">
+
+        <h4 class="fw-bold text-primary mb-3">
+            Preventive Maintenance History
+        </h4>
+
+        <div class="table-responsive">
+            <table class="table table-bordered table-striped align-middle">
+
+                <thead class="table-dark">
+                    <tr>
+                        <th width="220">PM Date</th>
+                        <th width="180">Engineer</th>
+                        <th width="180">Next PM</th>
+                        <th>Notes</th>
+                        <th width="180">Status</th>
+                        <th width="260">Manager Approval / Report</th>
+                    </tr>
+                </thead>
+
+                <tbody>
+
+                {% for pm in asset.pm_history.all %}
+
+                    <tr>
+                        <td>{{ pm.performed_at }}</td>
+
+                        <td>{{ pm.performed_by|default:"-" }}</td>
+
+                        <td>{{ pm.next_pm_date|default:"-" }}</td>
+
+                        <td>{{ pm.notes|default:"-" }}</td>
+
+                        <td>
+                            {% if pm.status == "CLOSED" %}
+                                <span class="badge bg-success">
+                                    Closed
+                                </span>
+                            {% elif pm.status == "REJECTED" %}
+                                <span class="badge bg-danger">
+                                    Rejected
+                                </span>
+                            {% elif pm.status == "WAITING_CONFIRMATION" %}
+                                <span class="badge bg-warning text-dark">
+                                    Waiting Clinic Confirmation
+                                </span>
+                            {% else %}
+                                <span class="badge bg-secondary">
+                                    {{ pm.status }}
+                                </span>
+                            {% endif %}
+                        </td>
+
+                        <td>
+
+                            {% if pm.status == "CLOSED" %}
+
+                                {% if pm.manager_approved %}
+
+                                    <div class="mb-2">
+                                        <span class="badge bg-success">
+                                            Manager Approved
+                                        </span>
+                                    </div>
+
+                                    <a href="{% url 'ppm_service_report' pm.id %}"
+                                       class="btn btn-success btn-sm">
+                                        📄 PPM Report
+                                    </a>
+
+                                {% elif pm.manager_rejected %}
+
+                                    <span class="badge bg-danger">
+                                        Manager Rejected
+                                    </span>
+
+                                {% else %}
+
+                                    {% if user.is_superuser %}
+
+                                        <a href="{% url 'approve_pm_report' pm.id %}"
+                                           class="btn btn-success btn-sm">
+                                            ✅ Approve
+                                        </a>
+
+                                        <a href="{% url 'reject_pm_report' pm.id %}"
+                                           class="btn btn-danger btn-sm">
+                                            ❌ Reject
+                                        </a>
+
+                                    {% else %}
+
+                                        <button class="btn btn-secondary btn-sm" disabled>
+                                            ⏳ Pending Manager Approval
+                                        </button>
+
+                                    {% endif %}
+
+                                {% endif %}
+
+                            {% elif pm.status == "REJECTED" %}
+
+                                <span class="badge bg-danger">
+                                    Returned To Engineer
+                                </span>
+
+                            {% else %}
+
+                                <span class="badge bg-warning text-dark">
+                                    Not Ready
+                                </span>
+
+                            {% endif %}
+
+                        </td>
+
+                    </tr>
+
+                {% empty %}
+
+                    <tr>
+                        <td colspan="6" class="text-center text-muted py-4">
+                            No PM history found
+                        </td>
+                    </tr>
+
+                {% endfor %}
+
+                </tbody>
+
+            </table>
+        </div>
+
+    </div>
+</div>
+
+<div class="card shadow-sm border-0">
+    <div class="card-body">
+
+        <h4 class="fw-bold text-success mb-3">
+            Corrective Maintenance History
+        </h4>
+
+        <div class="table-responsive">
+            <table class="table table-bordered table-striped align-middle">
+
+                <thead class="table-dark">
+                    <tr>
+                        <th width="80">MR</th>
+                        <th>Fault</th>
+                        <th width="130">Priority</th>
+                        <th width="150">Status</th>
+                        <th width="170">Engineer</th>
+                        <th width="190">Date</th>
+                    </tr>
+                </thead>
+
+                <tbody>
+
+                {% for req in asset.maintenance_requests.all %}
+
+                    <tr>
+                        <td>
+                            <a href="{% url 'maintenance_request_details' req.id %}"
+                               class="fw-bold text-success text-decoration-none">
+                                #{{ req.id }}
+                            </a>
+                        </td>
+
+                        <td>{{ req.fault_description }}</td>
+
+                        <td>{{ req.priority }}</td>
+
+                        <td>
+                            {% if req.status == "OPEN" %}
+                                <span class="badge"
+                                      style="background:#f8b4b4;color:#7f1d1d;">
+                                    Open
+                                </span>
+
+                            {% elif req.status == "IN_PROGRESS" %}
+                                <span class="badge bg-warning text-dark">
+                                    In Progress
+                                </span>
+
+                            {% elif req.status == "WAITING_PARTS" %}
+                                <span class="badge bg-danger">
+                                    ⚠ Waiting Parts
+                                </span>
+
+                            {% elif req.status == "CLOSED" %}
+                                <span class="badge bg-success">
+                                    ✓ Closed
+                                </span>
+
+                            {% else %}
+                                <span class="badge bg-secondary">
+                                    {{ req.status }}
+                                </span>
+                            {% endif %}
+                        </td>
+
+                        <td>{{ req.assigned_to|default:"-" }}</td>
+
+                        <td>{{ req.reported_at }}</td>
+                    </tr>
+
+                {% empty %}
+
+                    <tr>
+                        <td colspan="6" class="text-center text-muted py-4">
+                            No corrective maintenance history found
+                        </td>
+                    </tr>
+
+                {% endfor %}
+
+                </tbody>
+
+            </table>
+        </div>
+
+    </div>
+</div>
+
+{% endblock %}

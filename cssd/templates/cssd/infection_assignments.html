@@ -1,0 +1,15 @@
+{% extends 'cssd/base.html' %}
+{% block title %}Infection Control Assignments{% endblock %}
+{% block content %}
+<h1 class="fw-bold text-danger mb-1">Welcome, {{ user.get_full_name|default:user.username }} 👋</h1>
+<div class="text-muted fs-5 mb-4">Infection Control System - Unit Assignments</div>
+<div class="alert alert-info">Assignments are managed from Django Admin. Each active asset can be assigned to one nurse only.</div>
+<table class="table table-bordered bg-white shadow-sm">
+<thead class="table-danger"><tr><th>Clinic</th><th>Asset No.</th><th>Location</th><th>Nurse</th><th>Weekday</th><th>Active</th></tr></thead>
+<tbody>
+{% for a in assignments %}
+<tr><td>{{ a.display_name }}</td><td>{{ a.asset.asset_number }}</td><td>{{ a.location_display }}</td><td>{{ a.nurse.get_full_name|default:a.nurse.username }}</td><td>{{ a.get_weekday_display }}</td><td>{% if a.is_active %}Yes{% else %}No{% endif %}</td></tr>
+{% empty %}<tr><td colspan="6" class="text-center text-muted">No assignments yet.</td></tr>{% endfor %}
+</tbody>
+</table>
+{% endblock %}

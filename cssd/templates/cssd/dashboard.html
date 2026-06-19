@@ -1,0 +1,357 @@
+{% extends 'cssd/base.html' %}
+{% load tz %}
+{% block title %}Dashboard{% endblock %}
+
+{% block content %}
+
+<style>
+    .dashboard-header{
+        gap: 10px;
+    }
+
+    .stat-card{
+        height: 100px;
+        border-radius: 15px;
+    }
+
+    .stat-card .card-body{
+        display: flex;
+        flex-direction: column;
+        justify-content: center;
+        align-items: center;
+        padding: 8px;
+    }
+
+    .stat-icon{
+        font-size: 18px;
+        line-height: 1;
+        margin-bottom: 2px;
+    }
+
+    .stat-card h2{
+        margin: 0;
+        font-size: 24px;
+    }
+
+    .dashboard-btn{
+        height: 65px;
+        display: flex;
+        justify-content: center;
+        align-items: center;
+        font-weight: 600;
+        border-radius: 12px;
+        padding: 8px;
+        text-align: center;
+    }
+
+    .mobile-request-card{
+        border: 1px solid #e4e4e4;
+        border-radius: 14px;
+        background: white;
+        padding: 12px;
+        margin-bottom: 10px;
+        box-shadow: 0 3px 10px rgba(0,0,0,0.07);
+    }
+
+    .mobile-request-header{
+        display: flex;
+        justify-content: space-between;
+        align-items: center;
+        margin-bottom: 8px;
+    }
+
+    .mobile-request-row{
+        font-size: 13px;
+        margin-bottom: 4px;
+    }
+
+    .desktop-latest{
+        display: block;
+    }
+
+    .mobile-latest{
+        display: none;
+    }
+
+    @media(max-width:768px){
+        .dashboard-header{
+            align-items: flex-start !important;
+        }
+
+        .dashboard-header h3{
+            font-size: 18px;
+        }
+
+        .dashboard-header small{
+            font-size: 12px;
+        }
+
+        .stat-card{
+            height: 82px;
+        }
+
+        .stat-icon{
+            font-size: 15px;
+            margin-bottom: 1px;
+        }
+
+        .stat-card small{
+            font-size: 10px;
+        }
+
+        .stat-card h2{
+            font-size: 20px;
+        }
+
+        .dashboard-btn{
+            height: 52px;
+            font-size: 13px;
+        }
+
+        .desktop-latest{
+            display: none;
+        }
+
+        .mobile-latest{
+            display: block;
+        }
+    }
+</style>
+
+<div class="d-flex justify-content-between align-items-center mb-3 dashboard-header">
+    <div>
+        <h3 class="fw-bold text-success mb-1">
+            Welcome, {{ user.username }} 👋
+        </h3>
+        <small class="text-muted">
+            CSSD Dashboard
+        </small>
+    </div>
+</div>
+
+<div class="row g-2 mb-4">
+
+    <div class="col-4 col-md-4 col-lg-2">
+        <div class="card border-0 shadow-sm text-center stat-card">
+            <div class="card-body">
+                <div class="stat-icon">📊</div>
+                <small class="text-muted">Total</small>
+                <h2 class="fw-bold text-primary">{{ total_requests }}</h2>
+            </div>
+        </div>
+    </div>
+
+    <div class="col-4 col-md-4 col-lg-2">
+        <div class="card border-0 shadow-sm text-center stat-card">
+            <div class="card-body">
+                <div class="stat-icon">⏳</div>
+                <small class="text-muted">Pending</small>
+                <h2 class="fw-bold text-warning">{{ pending_requests }}</h2>
+            </div>
+        </div>
+    </div>
+
+    <div class="col-4 col-md-4 col-lg-2">
+        <div class="card border-0 shadow-sm text-center stat-card">
+            <div class="card-body">
+                <div class="stat-icon">📥</div>
+                <small class="text-muted">Received</small>
+                <h2 class="fw-bold text-info">{{ received_requests }}</h2>
+            </div>
+        </div>
+    </div>
+
+    <div class="col-4 col-md-4 col-lg-2">
+        <div class="card border-0 shadow-sm text-center stat-card">
+            <div class="card-body">
+                <div class="stat-icon">🔄</div>
+                <small class="text-muted">Returned</small>
+                <h2 class="fw-bold text-secondary">{{ returned_requests }}</h2>
+            </div>
+        </div>
+    </div>
+
+    <div class="col-4 col-md-4 col-lg-2">
+        <div class="card border-0 shadow-sm text-center stat-card">
+            <div class="card-body">
+                <div class="stat-icon">✅</div>
+                <small class="text-muted">Confirmed</small>
+                <h2 class="fw-bold text-success">{{ confirmed_requests }}</h2>
+            </div>
+        </div>
+    </div>
+
+    <div class="col-4 col-md-4 col-lg-2">
+        <div class="card border-0 shadow-sm text-center stat-card">
+            <div class="card-body">
+                <div class="stat-icon">🔒</div>
+                <small class="text-muted">Closed</small>
+                <h2 class="fw-bold text-dark">{{ closed_requests }}</h2>
+            </div>
+        </div>
+    </div>
+
+</div>
+
+<div class="row g-2 mb-4">
+
+    {% if is_admin_user or is_clinic_user %}
+    <div class="col-6 col-md-3">
+        <a href="{% url 'new_request' %}"
+           class="btn btn-success w-100 dashboard-btn shadow-sm">
+            Create Request
+        </a>
+    </div>
+    {% endif %}
+
+    {% if is_admin_user or is_clinic_user %}
+    <div class="col-6 col-md-3">
+        <a href="{% url 'my_requests' %}"
+           class="btn btn-outline-info bg-white w-100 dashboard-btn shadow-sm">
+            My Requests
+        </a>
+    </div>
+    {% endif %}
+
+    <div class="col-6 col-md-3">
+        <a href="{% url 'all_requests' %}"
+           class="btn btn-outline-dark bg-white w-100 dashboard-btn shadow-sm">
+            All Requests
+        </a>
+    </div>
+
+    {% if is_admin_user or is_cssd_user %}
+    <div class="col-6 col-md-3">
+        <a href="{% url 'cssd_pending_requests' %}"
+           class="btn btn-outline-success bg-white w-100 dashboard-btn shadow-sm">
+            Pending
+        </a>
+    </div>
+
+    <div class="col-6 col-md-3">
+        <a href="{% url 'cssd_received_requests' %}"
+           class="btn btn-outline-primary bg-white w-100 dashboard-btn shadow-sm">
+            Received
+        </a>
+    </div>
+    {% endif %}
+
+    {% if is_admin_user or is_clinic_user %}
+    <div class="col-6 col-md-3">
+        <a href="{% url 'clinic_pending_returns' %}"
+           class="btn btn-outline-warning bg-white w-100 dashboard-btn shadow-sm">
+            Clinic Pending
+        </a>
+    </div>
+    {% endif %}
+
+    {% if is_admin_user %}
+    <div class="col-6 col-md-3">
+        <a href="{% url 'reports' %}"
+           class="btn btn-outline-danger bg-white w-100 dashboard-btn shadow-sm">
+            Reports
+        </a>
+    </div>
+    {% endif %}
+
+</div>
+
+<div class="d-flex justify-content-between align-items-center mb-3">
+    <h5 class="fw-bold text-success mb-0">Latest Requests</h5>
+</div>
+
+<div class="desktop-latest">
+    <div class="table-responsive">
+        <table class="table table-hover table-bordered align-middle bg-white shadow-sm">
+            <thead class="table-success">
+                <tr>
+                    <th width="90">ID</th>
+                    <th>Location</th>
+                    <th width="220">Status</th>
+                    <th width="220">Date</th>
+                    <th width="120">Action</th>
+                </tr>
+            </thead>
+
+            <tbody>
+                {% for req in latest_requests %}
+                <tr>
+                    <td class="fw-bold">#{{ req.id }}</td>
+                    <td>{{ req.location }}</td>
+                    <td>
+                        {% if req.status == "SENT_TO_CSSD" %}
+                            <span class="badge bg-warning text-dark">Pending</span>
+                        {% elif req.status == "RECEIVED_BY_CSSD" %}
+                            <span class="badge bg-primary">Received</span>
+                        {% elif req.status == "RETURNED_TO_CLINIC" %}
+                            <span class="badge bg-info text-dark">Returned</span>
+                        {% elif req.status == "CONFIRMED_BY_CLINIC" %}
+                            <span class="badge bg-success">Confirmed</span>
+                        {% elif req.status == "CLOSED" %}
+                            <span class="badge bg-dark">Closed</span>
+                        {% else %}
+                            <span class="badge bg-secondary">{{ req.status }}</span>
+                        {% endif %}
+                    </td>
+                    <td>{{ req.created_at|localtime|date:"M d, Y - h:i A" }}</td>
+                    <td>
+                        <a href="{% url 'cssd_request_details' req.id %}"
+                           class="btn btn-sm btn-outline-success">
+                            View
+                        </a>
+                    </td>
+                </tr>
+                {% empty %}
+                <tr>
+                    <td colspan="5" class="text-center text-muted py-4">
+                        No requests found
+                    </td>
+                </tr>
+                {% endfor %}
+            </tbody>
+        </table>
+    </div>
+</div>
+
+<div class="mobile-latest">
+    {% for req in latest_requests %}
+    <div class="mobile-request-card">
+        <div class="mobile-request-header">
+            <strong>#{{ req.id }}</strong>
+
+            {% if req.status == "SENT_TO_CSSD" %}
+                <span class="badge bg-warning text-dark">Pending</span>
+            {% elif req.status == "RECEIVED_BY_CSSD" %}
+                <span class="badge bg-primary">Received</span>
+            {% elif req.status == "RETURNED_TO_CLINIC" %}
+                <span class="badge bg-info text-dark">Returned</span>
+            {% elif req.status == "CONFIRMED_BY_CLINIC" %}
+                <span class="badge bg-success">Confirmed</span>
+            {% elif req.status == "CLOSED" %}
+                <span class="badge bg-dark">Closed</span>
+            {% else %}
+                <span class="badge bg-secondary">{{ req.status }}</span>
+            {% endif %}
+        </div>
+
+        <div class="mobile-request-row">
+            <strong>Location:</strong> {{ req.location }}
+        </div>
+
+        <div class="mobile-request-row">
+            <strong>Date:</strong> {{ req.created_at }}
+        </div>
+
+        <a href="{% url 'cssd_request_details' req.id %}"
+           class="btn btn-sm btn-outline-success w-100 mt-2">
+            View Request
+        </a>
+    </div>
+    {% empty %}
+    <div class="text-center text-muted py-4">
+        No requests found
+    </div>
+    {% endfor %}
+</div>
+
+{% endblock %}

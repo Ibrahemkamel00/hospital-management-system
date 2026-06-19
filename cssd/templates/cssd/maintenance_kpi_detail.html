@@ -1,0 +1,21 @@
+{% extends 'cssd/base.html' %}
+{% block title %}{{ metric_title }}{% endblock %}
+{% block content %}
+<h3 class="fw-bold text-success mb-3">{{ metric_title }} Details</h3>
+<div class="card border-0 shadow-sm mb-4"><div class="card-body">
+<form method="get" class="row g-2 align-items-end">
+  <div class="col-md-3"><label class="fw-bold small">From</label><input type="date" name="from_date" value="{{ from_date }}" class="form-control"></div>
+  <div class="col-md-3"><label class="fw-bold small">To</label><input type="date" name="to_date" value="{{ to_date }}" class="form-control"></div>
+  <div class="col-md-3"><label class="fw-bold small">Location</label><select name="location" class="form-select"><option value="">All</option>{% for loc in locations %}<option value="{{ loc.id }}" {% if selected_location == loc.id|stringformat:'s' %}selected{% endif %}>{{ loc.name }}</option>{% endfor %}</select></div>
+  <div class="col-md-2"><button class="btn btn-success w-100">Filter</button></div>
+  <div class="col-md-1"><button type="button" onclick="window.print()" class="btn btn-outline-dark w-100">Print</button></div>
+</form>
+</div></div>
+<div class="row g-3 mb-4"><div class="col-md-4"><div class="card border-0 shadow-sm"><div class="card-body text-center"><small class="text-muted">Current Value</small><h1 class="fw-bold text-success">{{ metric_value }}{% if metric == 'availability' %}%{% else %}d{% endif %}</h1></div></div></div><div class="col-md-8"><div class="card border-0 shadow-sm"><div class="card-body"><canvas id="kpiChart" height="120"></canvas></div></div></div></div>
+<div class="card border-0 shadow-sm"><div class="card-header bg-success text-white fw-bold">By Location</div><div class="card-body table-responsive"><table class="table table-striped"><thead><tr><th>Location</th><th>Value</th><th>Assets</th><th>Open Requests</th></tr></thead><tbody>{% for r in location_rows %}<tr><td>{{ r.name }}</td><td class="fw-bold">{{ r.value }}{% if metric == 'availability' %}%{% else %}d{% endif %}</td><td>{{ r.assets }}</td><td>{{ r.open }}</td></tr>{% endfor %}</tbody></table></div></div>
+<script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+<script>
+const ctx = document.getElementById('kpiChart');
+new Chart(ctx, {type:'line', data:{labels: {{ chart_labels|safe }}, datasets:[{label:'Closed requests trend', data: {{ chart_values|safe }}, tension:.35, fill:true}]}, options:{responsive:true, plugins:{legend:{display:true}}, scales:{y:{beginAtZero:true}}}});
+</script>
+{% endblock %}

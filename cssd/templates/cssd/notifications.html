@@ -1,0 +1,64 @@
+{% extends 'cssd/base.html' %}
+
+{% block title %}Notifications{% endblock %}
+
+{% block content %}
+
+<h3 class="fw-bold text-success mb-4">
+    Notifications
+</h3>
+
+<div class="card shadow-sm border-0">
+
+    <div class="list-group list-group-flush">
+
+        {% for n in notifications %}
+
+            {% if n.url %}
+                <a href="{% url 'open_notification' n.id %}"
+                   class="list-group-item list-group-item-action {% if not n.is_read %}bg-light border-start border-4 border-primary{% endif %}">
+            {% else %}
+                <div class="list-group-item {% if not n.is_read %}bg-light border-start border-4 border-primary{% endif %}">
+            {% endif %}
+
+                <div class="d-flex justify-content-between align-items-center">
+
+                    <h6 class="mb-1 fw-bold">
+                        {{ n.title }}
+                    </h6>
+
+                    {% if not n.is_read %}
+                        <span class="badge bg-danger">
+                            New
+                        </span>
+                    {% endif %}
+
+                </div>
+
+                <small class="text-muted">
+                    {{ n.created_at|date:"Y-m-d H:i" }}
+                </small>
+
+                <p class="mb-0 mt-2">
+                    {{ n.message }}
+                </p>
+
+            {% if n.url %}
+                </a>
+            {% else %}
+                </div>
+            {% endif %}
+
+        {% empty %}
+
+            <div class="list-group-item text-muted">
+                No Notifications
+            </div>
+
+        {% endfor %}
+
+    </div>
+
+</div>
+
+{% endblock %}

@@ -1,0 +1,109 @@
+{% extends 'cssd/base.html' %}
+
+{% block title %}Reports Center{% endblock %}
+
+{% block content %}
+
+<style>
+    .report-card{
+        border:0;
+        border-radius:18px;
+        color:white;
+        box-shadow:0 8px 22px rgba(0,0,0,.14);
+    }
+
+    .daily-card{
+        background:linear-gradient(135deg,#16a34a,#166534);
+    }
+
+    .period-card{
+        background:linear-gradient(135deg,#2563eb,#1e40af);
+    }
+
+    .report-card h4{
+        font-weight:900;
+    }
+</style>
+
+<div class="container mt-4" style="max-width:1000px;">
+
+    <h2 class="fw-bold text-primary mb-4">
+        📊 Reports Center
+    </h2>
+
+    <div class="row g-4">
+
+        <div class="col-md-6">
+            <div class="card report-card daily-card">
+                <div class="card-body">
+
+                    <h4 class="mb-3">📅 Daily Report</h4>
+
+                    <form method="get" action="{% url 'daily_report' %}">
+
+                        <label class="fw-bold mb-2">Select Date</label>
+
+                        <input type="date"
+                               name="date"
+                               class="form-control mb-3"
+                               required>
+
+                        <button class="btn btn-light w-100 fw-bold">
+                            Generate Daily Report
+                        </button>
+
+                    </form>
+
+                </div>
+            </div>
+        </div>
+
+        <div class="col-md-6">
+            <div class="card report-card period-card">
+                <div class="card-body">
+
+                    <h4 class="mb-3">📆 Period / Monthly Report</h4>
+
+                    <form method="get" action="{% url 'period_report' %}">
+
+                        <label class="fw-bold">From</label>
+                        <input type="date"
+                               name="from_date"
+                               class="form-control mb-3"
+                               required>
+
+                        <label class="fw-bold">To</label>
+                        <input type="date"
+                               name="to_date"
+                               class="form-control mb-3"
+                               required>
+
+                        <button class="btn btn-light w-100 fw-bold">
+                            Generate Period Report
+                        </button>
+
+                    </form>
+
+                </div>
+            </div>
+        </div>
+
+
+        <div class="col-md-12">
+            <div class="card report-card" style="background:linear-gradient(135deg,#7c3aed,#4c1d95);">
+                <div class="card-body">
+                    <h4 class="mb-3">🧼 CSSD Filtered Report</h4>
+                    <form method="get" action="{% url 'all_requests' %}" class="row g-2 align-items-end">
+                        <div class="col-md-3"><label class="fw-bold">From</label><input type="date" name="from_date" class="form-control"></div>
+                        <div class="col-md-3"><label class="fw-bold">To</label><input type="date" name="to_date" class="form-control"></div>
+                        <div class="col-md-3"><label class="fw-bold">Status</label><select name="status" class="form-select"><option value="">All</option><option value="SENT_TO_CSSD">Sent</option><option value="RECEIVED_BY_CSSD">Received</option><option value="RETURNED_TO_CLINIC">Returned</option><option value="CLOSED">Closed</option></select></div>
+                        <div class="col-md-3"><button class="btn btn-light w-100 fw-bold">Open CSSD Report</button></div>
+                    </form>
+                </div>
+            </div>
+        </div>
+    </div>
+
+</div>
+
+{% endblock %}
