@@ -1190,7 +1190,7 @@ def perform_pm(request, asset_id):
 )
         notify_event(
     title="PPM Waiting Clinic Confirmation",
-    message=f"PPM for {asset.asset_name} is waiting for clinic confirmation.",
+    message=f"PPM for {asset.asset_number} is waiting for clinic confirmation.",
     url=f"/pm-history/{pm_history.id}/",
     target_groups=[asset.location.name] if asset.location else [],
 )
