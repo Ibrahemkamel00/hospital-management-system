@@ -273,16 +273,37 @@
                 <td>{{ forloop.counter }}</td>
                 <td class="left">{{ item.instrument_name }}</td>
                 <td>
-                    {% if item.is_manual %}
-                        Manual
-                    {% else %}
-                        Template
-                    {% endif %}
-                </td>
+    {% if item.is_manual %}
+        Manual
+    {% else %}
+        {{ item.template.template_name }}
+    {% endif %}
+</td>
                 <td>{{ item.quantity_sent }}</td>
-                <td>{{ item.quantity_received_by_cssd }}</td>
-                <td>{{ item.quantity_returned }}</td>
-                <td>{{ item.quantity_received_by_clinic }}</td>
+
+<td
+{% if item.quantity_received_by_cssd != item.quantity_sent %}
+style="background:#ffcccc;font-weight:bold;color:red;"
+{% endif %}
+>
+{{ item.quantity_received_by_cssd }}
+</td>
+
+<td
+{% if item.quantity_returned != item.quantity_sent %}
+style="background:#ffcccc;font-weight:bold;color:red;"
+{% endif %}
+>
+{{ item.quantity_returned }}
+</td>
+
+<td
+{% if item.quantity_received_by_clinic != item.quantity_sent %}
+style="background:#ffcccc;font-weight:bold;color:red;"
+{% endif %}
+>
+{{ item.quantity_received_by_clinic }}
+</td>
                 <td>
                     {% if item.clinic_comment %}
                         {{ item.clinic_comment }}
