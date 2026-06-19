@@ -1196,7 +1196,7 @@ def perform_pm(request, asset_id):
         notify_event(
     title="PPM Waiting Clinic Confirmation",
     message=f"PPM for {asset.asset_number} is waiting for clinic confirmation.",
-    url=f"/pm-history/{pm_history.id}/",
+    url=f"/pm-review/{pm_history.id}/",
     target_groups=[target_group] if target_group else [],
 )
         for item in pm_items:
