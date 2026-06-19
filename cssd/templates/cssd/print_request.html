@@ -276,7 +276,7 @@
     {% if item.is_manual %}
         Manual
     {% elif item.cssd_request_template %}
-        {{ item.cssd_request_template }}
+        {{ item.cssd_request_template.template.name }}
     {% else %}
         Template
     {% endif %}
