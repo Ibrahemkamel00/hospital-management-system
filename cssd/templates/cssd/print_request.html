@@ -275,8 +275,10 @@
                 <td>
     {% if item.is_manual %}
         Manual
+    {% elif item.cssd_request_template %}
+        {{ item.cssd_request_template }}
     {% else %}
-        {{ item.template.template_name }}
+        Template
     {% endif %}
 </td>
                 <td>{{ item.quantity_sent }}</td>
