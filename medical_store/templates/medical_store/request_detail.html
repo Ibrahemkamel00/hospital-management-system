@@ -1,0 +1,69 @@
+{% extends 'cssd/base.html' %}
+{% load static %}
+{% block content %}
+{% include 'medical_store/_cards.html' %}
+<script>document.body.classList.add('report-clean-mode');</script>
+<div class="report-page compact-report">
+  <div class="report-header">
+    <img class="report-logo" src="{% static 'images/hospital_logo.png' %}" onerror="this.style.display='none'">
+    <div class="report-title">
+      <h2>Medical Store Request Report</h2>
+      <p>{{ store_request.request_number }} | {{ store_request.get_status_display }}</p>
+    </div>
+    <img class="report-logo" src="{% static 'images/company_logo.png' %}" onerror="this.style.display='none'">
+  </div>
+
+  <div class="text-end mb-3 no-print"><button onclick="window.print()" class="btn btn-outline-primary">🖨 Print Report</button></div>
+
+  <table class="table table-bordered info-table">
+    <tr><th>Request No.</th><td>{{ store_request.request_number }}</td><th>Status</th><td>{{ store_request.get_status_display }}</td></tr>
+    <tr><th>Requested By</th><td>{{ store_request.requested_by|default:'-' }}</td><th>Department</th><td>{{ store_request.department|default:'-' }}</td></tr>
+    <tr><th>Created At</th><td>{{ store_request.created_at|date:'Y-m-d H:i' }}</td><th>Closed At</th><td>{{ store_request.nurse_confirmed_at|date:'Y-m-d H:i'|default:'-' }}</td></tr>
+    <tr><th>Approved By</th><td>{{ store_request.hospital_manager_by|default:'-' }}</td><th>Approved At</th><td>{{ store_request.hospital_manager_at|date:'Y-m-d H:i'|default:'-' }}</td></tr>
+    <tr><th>Issued By</th><td>{{ store_request.store_issued_by|default:'-' }}</td><th>Issued At</th><td>{{ store_request.store_issued_at|date:'Y-m-d H:i'|default:'-' }}</td></tr>
+    <tr><th>Reason</th><td colspan="3">{{ store_request.reason }}</td></tr>
+    {% if store_request.hospital_manager_comment %}<tr><th>Manager Comment</th><td colspan="3">{{ store_request.hospital_manager_comment }}</td></tr>{% endif %}
+    {% if store_request.store_comment %}<tr><th>Store Comment</th><td colspan="3">{{ store_request.store_comment }}</td></tr>{% endif %}
+    {% if store_request.nurse_comment %}<tr><th>Nurse Comment</th><td colspan="3">{{ store_request.nurse_comment }}</td></tr>{% endif %}
+  </table>
+
+  <h4 class="fw-bold mt-4">Request Items</h4>
+  <div class="table-responsive">
+    <table class="table table-bordered ms-table">
+      <thead>
+        <tr><th>#</th><th>Product</th><th>Code</th><th>Shelf</th><th>Requested</th><th>Issued</th><th>Adjustment Reason</th></tr>
+      </thead>
+      <tbody>
+        {% for item in store_request.items.all|dictsort:"product.shelf" %}
+        <tr>
+          <td>{{ forloop.counter }}</td>
+          <td>{{ item.product.name }}</td>
+          <td>{{ item.product.code }}</td>
+          <td><span class="shelf-badge">{{ item.product.shelf|default:'-' }}</span></td>
+          <td class="ok-cell">{{ item.requested_display }}</td>
+          <td {% if item.quantity_changed %}class="changed-cell"{% endif %}>{{ item.issued_display }}</td>
+          <td {% if item.issue_adjustment_reason %}class="changed-cell"{% endif %}>{{ item.issue_adjustment_reason|default:'-' }}</td>
+        </tr>
+        {% empty %}<tr><td colspan="7">No items found.</td></tr>{% endfor %}
+      </tbody>
+    </table>
+  </div>
+
+  <h4 class="fw-bold mt-4">Request Timeline</h4>
+  <ul class="timeline-compact">
+    <li class="timeline-item">🟢 Request Created — {{ store_request.created_at|date:'Y-m-d H:i' }} by {{ store_request.requested_by|default:'-' }}</li>
+    {% if store_request.hospital_manager_at %}<li class="timeline-item">{% if store_request.status == 'REJECTED' %}🔴{% else %}🟢{% endif %} Hospital Manager Decision — {{ store_request.hospital_manager_by|default:'-' }} — {{ store_request.hospital_manager_at|date:'Y-m-d H:i' }}</li>{% endif %}
+    {% if store_request.store_issued_at %}<li class="timeline-item">🟢 Store Issued — {{ store_request.store_issued_by|default:'-' }} — {{ store_request.store_issued_at|date:'Y-m-d H:i' }}</li>{% endif %}
+    {% if store_request.nurse_confirmed_at %}<li class="timeline-item">🟢 Nurse Confirmed Receipt — {{ store_request.nurse_confirmed_by|default:'-' }} — {{ store_request.nurse_confirmed_at|date:'Y-m-d H:i' }}</li><li class="timeline-item">🔒 Request Closed — {{ store_request.nurse_confirmed_at|date:'Y-m-d H:i' }}</li>{% endif %}
+  </ul>
+
+  <div class="print-footer">Developed & Powered by Eng. Ibrahem Kamel</div>
+</div>
+
+<div class="ms-panel no-print text-center">
+  {% if store_request.status == 'PENDING_HOSPITAL_MANAGER' %}<a href="{% url 'medical_store:approve_request' store_request.id %}" class="btn btn-warning">Hospital Manager Review</a>{% endif %}
+  {% if store_request.status == 'APPROVED_WAITING_STORE' %}<a href="{% url 'medical_store:issue_request' store_request.id %}" class="btn btn-primary">Issue Items</a>{% endif %}
+  {% if store_request.status == 'ISSUED_WAITING_NURSE_CONFIRM' %}<a href="{% url 'medical_store:confirm_receipt' store_request.id %}" class="btn btn-success">Confirm Receipt</a>{% endif %}
+  <a href="{% url 'medical_store:request_list' %}" class="btn btn-secondary">Back</a>
+</div>
+{% endblock %}

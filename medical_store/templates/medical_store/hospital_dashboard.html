@@ -1,0 +1,20 @@
+{% extends 'cssd/base.html' %}
+{% block content %}
+{% include 'medical_store/_cards.html' %}
+<div class="ms-dashboard-wrap">
+  <div class="text-center mb-4"><h2 class="fw-bold text-success">Welcome, {{ user.get_full_name|default:user.username }} 👋</h2><h4>Medical Store Hospital Manager Dashboard</h4></div>
+  <div class="ms-grid">
+    <a class="ms-card ms-yellow" href="{% url 'medical_store:request_list_status' 'PENDING_HOSPITAL_MANAGER' %}"><div class="card-body"><h4>Pending Approval</h4><div class="num">{{ pending_approval }}</div></div></a>
+    <a class="ms-card ms-blue" href="{% url 'medical_store:request_list_status' 'APPROVED_WAITING_STORE' %}"><div class="card-body"><h4>Waiting Store</h4><div class="num">{{ waiting_store }}</div></div></a>
+    <a class="ms-card ms-orange" href="{% url 'medical_store:request_list_status' 'ISSUED_WAITING_NURSE_CONFIRM' %}"><div class="card-body"><h4>Waiting Nurse</h4><div class="num">{{ waiting_nurse }}</div></div></a>
+    <a class="ms-card ms-purple" href="{% url 'medical_store:request_list_status' 'CLOSED' %}"><div class="card-body"><h4>Closed</h4><div class="num">{{ closed }}</div></div></a>
+    <a class="ms-card ms-red" href="{% url 'medical_store:request_list_status' 'REJECTED' %}"><div class="card-body"><h4>Rejected</h4><div class="num">{{ rejected }}</div></div></a>
+    <a class="ms-card ms-green" href="{% url 'medical_store:inventory' %}"><div class="card-body"><div class="icon">📦</div><h4>Inventory</h4><p>Stock balance</p></div></a>
+    <a class="ms-card ms-orange" href="{% url 'medical_store:low_stock' %}"><div class="card-body"><h4>Low Stock</h4><div class="num">{{ low_stock_count }}</div></div></a>
+    <a class="ms-card ms-red" href="{% url 'medical_store:near_expiry' %}"><div class="card-body"><h4>Near Expiry</h4><div class="num">{{ near_expiry_count }}</div></div></a>
+    <a class="ms-card ms-brown" href="{% url 'medical_store:reports_center' %}"><div class="card-body"><div class="icon">📊</div><h4>Reports</h4><p>Center</p></div></a>
+    <a class="ms-card ms-cyan" href="{% url 'medical_store:department_requests_report' %}"><div class="card-body"><div class="icon">🏥</div><h4>Departments</h4><p>Requests</p></div></a>
+  </div>
+  {% include 'medical_store/_dashboard_charts.html' %}
+</div>
+{% endblock %}

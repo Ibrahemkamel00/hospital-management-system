@@ -41,6 +41,7 @@ INSTALLED_APPS = [
     'django.contrib.staticfiles',
 
     'cssd.apps.CssdConfig',
+    'medical_store.apps.MedicalStoreConfig',
 ]
 
 MIDDLEWARE = [

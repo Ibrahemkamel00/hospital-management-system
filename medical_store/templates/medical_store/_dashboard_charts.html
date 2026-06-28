@@ -1,0 +1,57 @@
+<div class="ms-chart-grid">
+  <div class="ms-chart-card">
+    <div class="ms-chart-title">📤 Top Issued Products</div>
+    {% if chart_top_products %}
+      {% for row in chart_top_products %}
+      <div class="ms-bar-row">
+        <div class="ms-bar-label"><span>{{ row.label }}</span><span>{{ row.value }}</span></div>
+        <div class="ms-bar-track"><div class="ms-bar-fill" style="width: {{ row.percent }}%"></div></div>
+      </div>
+      {% endfor %}
+    {% else %}
+      <div class="ms-empty-chart">No issued products yet.</div>
+    {% endif %}
+  </div>
+
+  <div class="ms-chart-card">
+    <div class="ms-chart-title">🏥 Department Requests</div>
+    {% if chart_department_requests %}
+      {% for row in chart_department_requests %}
+      <div class="ms-bar-row">
+        <div class="ms-bar-label"><span>{{ row.label }}</span><span>{{ row.value }}</span></div>
+        <div class="ms-bar-track"><div class="ms-bar-fill" style="width: {{ row.percent }}%"></div></div>
+      </div>
+      {% endfor %}
+    {% else %}
+      <div class="ms-empty-chart">No department requests yet.</div>
+    {% endif %}
+  </div>
+
+  <div class="ms-chart-card">
+    <div class="ms-chart-title">📋 Request Status</div>
+    {% if chart_request_status %}
+      {% for row in chart_request_status %}
+      <div class="ms-bar-row">
+        <div class="ms-bar-label"><span>{{ row.label }}</span><span>{{ row.value }}</span></div>
+        <div class="ms-bar-track"><div class="ms-bar-fill" style="width: {{ row.percent }}%"></div></div>
+      </div>
+      {% endfor %}
+    {% else %}
+      <div class="ms-empty-chart">No requests yet.</div>
+    {% endif %}
+  </div>
+
+  <div class="ms-chart-card">
+    <div class="ms-chart-title">🚚 Top Suppliers</div>
+    {% if chart_suppliers %}
+      {% for row in chart_suppliers %}
+      <div class="ms-bar-row">
+        <div class="ms-bar-label"><span>{{ row.label }}</span><span>{{ row.value }}</span></div>
+        <div class="ms-bar-track"><div class="ms-bar-fill" style="width: {{ row.percent }}%"></div></div>
+      </div>
+      {% endfor %}
+    {% else %}
+      <div class="ms-empty-chart">No received stock yet.</div>
+    {% endif %}
+  </div>
+</div>

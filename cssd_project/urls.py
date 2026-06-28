@@ -1,5 +1,5 @@
 from django.contrib import admin
-from django.urls import path
+from django.urls import path, include
 from django.contrib.auth import views as auth_views
 from django.conf import settings
 from django.conf.urls.static import static
@@ -78,11 +78,15 @@ from cssd.views import (
     infection_task_detail,
     infection_cleaning_report,
     infection_assignments,
+    management_center,
+    ai_assistant,
 
 )
 
 urlpatterns = [
 
+path("management-center/", management_center, name="management_center"),
+path("ai-assistant/", ai_assistant, name="ai_assistant"),
 
 path("infection-control/", infection_entry, name="infection_entry"),
 path("infection-control/nurse-dashboard/", infection_nurse_dashboard, name="infection_nurse_dashboard"),
@@ -371,6 +375,8 @@ path(
     asset_details,
     name='asset_details'
 ),
+
+    path("medical-store/", include("medical_store.urls")),
 
     path('admin/', admin.site.urls),
 

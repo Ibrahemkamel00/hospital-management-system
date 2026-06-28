@@ -1,0 +1,94 @@
+{% extends 'cssd/base.html' %}
+{% block content %}
+{% include 'medical_store/_cards.html' %}
+<div class="ms-panel">
+  <h3 class="fw-bold">📝 New Medical Store Request</h3>
+  <form method="post" id="requestForm">{% csrf_token %}
+    <div class="row g-3">
+      <div class="col-md-6">
+        <label class="form-label fw-bold">Department</label>
+        <input class="form-control" value="{{ department }}" readonly>
+        <small class="text-muted">Department is added automatically from your user.</small>
+      </div>
+      <div class="col-md-6"><label class="form-label fw-bold">Reason</label>{{ form.reason }}</div>
+    </div>
+    <hr>
+    <h5 class="fw-bold">Items</h5>
+    <p class="text-muted">Type one or two letters to search by product name or code. Stock balance is hidden for requesters.</p>
+
+    <div class="position-relative mb-3">
+      <input type="text" id="productSearch" class="form-control form-control-lg" placeholder="Search product by name or code...">
+      <div id="searchResults" class="list-group position-absolute w-100 shadow" style="z-index:1000;display:none;max-height:280px;overflow:auto"></div>
+    </div>
+
+    <div class="table-responsive">
+      <table class="table table-bordered ms-table" id="requestItemsTable">
+        <thead><tr><th>#</th><th>Product</th><th>Unit</th><th>Quantity</th><th>Equivalent</th><th>Remove</th></tr></thead>
+        <tbody></tbody>
+      </table>
+    </div>
+
+    <button type="button" id="addBlankItem" class="btn btn-outline-primary mb-3">+ Add Another Item</button><br>
+    <button name="action" value="submit" class="btn btn-success">Submit Request</button>
+    <button name="action" value="draft" class="btn btn-secondary">Save Draft</button>
+  </form>
+</div>
+<script>
+let rowNo = 0;
+function escapeHtml(text){ return String(text||'').replace(/[&<>'"]/g, c=>({'&':'&amp;','<':'&lt;','>':'&gt;',"'":'&#39;','"':'&quot;'}[c])); }
+function addRow(product){
+  rowNo++;
+  const tbody = document.querySelector('#requestItemsTable tbody');
+  const units = product ? product.units : [];
+  const unitPieces = product ? product.unit_pieces : {};
+  const tr = document.createElement('tr');
+  tr.dataset.pieces = JSON.stringify(unitPieces||{});
+  tr.innerHTML = `
+    <td>${rowNo}<input type="hidden" name="row_index" value="${rowNo}"><input type="hidden" name="product_${rowNo}" value="${product ? product.id : ''}"></td>
+    <td class="fw-bold">${product ? escapeHtml(product.name)+'<br><small>'+escapeHtml(product.code)+'</small>' : '<span class="text-muted">Select product from search</span>'}</td>
+    <td><select name="unit_${rowNo}" class="form-select unit-select">${units.map(u=>`<option value="${escapeHtml(u)}">${escapeHtml(u)}</option>`).join('')}</select></td>
+    <td><input type="number" name="quantity_${rowNo}" class="form-control qty-input" min="1" value="1"></td>
+    <td class="equiv-cell text-muted">-</td>
+    <td><button type="button" class="btn btn-sm btn-danger remove-row">Remove</button></td>`;
+  tbody.appendChild(tr);
+  updateEquivalent(tr);
+}
+function updateEquivalent(tr){
+  const qty = parseInt(tr.querySelector('.qty-input')?.value || '0');
+  const unit = tr.querySelector('.unit-select')?.value;
+  let pieces = 1;
+  try { pieces = JSON.parse(tr.dataset.pieces||'{}')[unit] || 1; } catch(e){}
+  const total = qty * pieces;
+  tr.querySelector('.equiv-cell').textContent = pieces > 1 ? `${total} Pieces` : `${qty} ${unit||''}`;
+}
+document.addEventListener('input', e=>{ if(e.target.classList.contains('qty-input')) updateEquivalent(e.target.closest('tr')); });
+document.addEventListener('change', e=>{ if(e.target.classList.contains('unit-select')) updateEquivalent(e.target.closest('tr')); });
+document.addEventListener('click', e=>{ if(e.target.classList.contains('remove-row')) e.target.closest('tr').remove(); });
+document.getElementById('addBlankItem').addEventListener('click', ()=>document.getElementById('productSearch').focus());
+
+const searchInput = document.getElementById('productSearch');
+const results = document.getElementById('searchResults');
+let timer = null;
+searchInput.addEventListener('input', ()=>{
+  clearTimeout(timer);
+  const q = searchInput.value.trim();
+  if(q.length < 1){ results.style.display='none'; return; }
+  timer = setTimeout(()=>{
+    fetch(`{% url 'medical_store:product_search' %}?q=${encodeURIComponent(q)}`)
+      .then(r=>r.json()).then(data=>{
+        results.innerHTML = '';
+        if(!data.results.length){ results.innerHTML = '<div class="list-group-item text-muted">No products found</div>'; }
+        data.results.forEach(p=>{
+          const a = document.createElement('button');
+          a.type='button'; a.className='list-group-item list-group-item-action';
+          a.innerHTML = `<b>${escapeHtml(p.name)}</b> <small class="text-muted">${escapeHtml(p.code)}</small>`;
+          a.addEventListener('click', ()=>{ addRow(p); searchInput.value=''; results.style.display='none'; searchInput.focus(); });
+          results.appendChild(a);
+        });
+        results.style.display='block';
+      });
+  }, 180);
+});
+document.addEventListener('click', e=>{ if(!results.contains(e.target) && e.target!==searchInput) results.style.display='none'; });
+</script>
+{% endblock %}

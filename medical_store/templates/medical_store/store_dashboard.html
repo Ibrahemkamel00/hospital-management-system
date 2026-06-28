@@ -1,0 +1,23 @@
+{% extends 'cssd/base.html' %}
+{% block title %}Medical Store Dashboard{% endblock %}
+{% block content %}
+{% include 'medical_store/_cards.html' %}
+<div class="ms-dashboard-wrap">
+  <div class="text-center mb-4"><h2 class="fw-bold text-success">Welcome, {{ user.get_full_name|default:user.username }} 👋</h2><h4>Medical Store Manager Dashboard</h4></div>
+  <div class="ms-grid">
+    <a class="ms-card ms-green" href="{% url 'medical_store:add_product' %}"><div class="card-body"><div class="icon">➕</div><h4>Add Product</h4><p>New item</p></div></a>
+    <a class="ms-card ms-blue" href="{% url 'medical_store:receive_stock' %}"><div class="card-body"><div class="icon">📥</div><h4>Receive Stock</h4><p>New batch</p></div></a>
+    <a class="ms-card ms-yellow" href="{% url 'medical_store:request_list_status' 'APPROVED_WAITING_STORE' %}"><div class="card-body"><h4>Pending Issue</h4><div class="num">{{ pending_requests }}</div></div></a>
+    <a class="ms-card ms-purple" href="{% url 'medical_store:inventory' %}"><div class="card-body"><div class="icon">📦</div><h4>Inventory</h4><p>Stock balance</p></div></a>
+    <a class="ms-card ms-orange" href="{% url 'medical_store:low_stock' %}"><div class="card-body"><h4>Low Stock</h4><div class="num">{{ low_stock_count }}</div></div></a>
+    <a class="ms-card ms-red" href="{% url 'medical_store:near_expiry' %}"><div class="card-body"><h4>Near Expiry</h4><div class="num">{{ near_expiry_count }}</div></div></a>
+    <a class="ms-card ms-brown" href="{% url 'medical_store:reports_center' %}"><div class="card-body"><div class="icon">📊</div><h4>Reports</h4><p>Center</p></div></a>
+    <a class="ms-card ms-gray" href="{% url 'medical_store:import_products' %}"><div class="card-body"><div class="icon">📤</div><h4>Import Excel</h4><p>CSV/XLSX</p></div></a>
+    <a class="ms-card ms-dark" href="{% url 'medical_store:request_list' %}"><div class="card-body"><div class="icon">📋</div><h4>All Requests</h4><p>Tracking</p></div></a>
+    <a class="ms-card ms-cyan" href="{% url 'medical_store:department_requests_report' %}"><div class="card-body"><div class="icon">🏥</div><h4>Departments</h4><p>Requests</p></div></a>
+  </div>
+  <div class="ms-panel"><h4 class="fw-bold">Store Statistics</h4><div class="row row-cols-2 row-cols-md-5 g-3 text-center"><div class="col"><div class="num">{{ total_products }}</div><b>Total Products</b></div><div class="col"><div class="num">{{ total_batches }}</div><b>Total Batches</b></div><div class="col"><div class="num">{{ total_stock }}</div><b>Total Stock</b></div><div class="col"><div class="num">{{ issued_today }}</div><b>Issued Today</b></div><div class="col"><div class="num">{{ received_today }}</div><b>Received Today</b></div></div></div>
+  {% include 'medical_store/_dashboard_charts.html' %}
+  <div class="ms-panel"><h4 class="fw-bold">Today's Activity</h4>{% if activity %}<div class="list-group">{% for log in activity %}<div class="list-group-item"><b>{{ log.created_at|date:'Y-m-d H:i' }}</b> — {{ log.action }} {% if log.user %}by {{ log.user.username }}{% endif %}<br><small>{{ log.details }}</small></div>{% endfor %}</div>{% else %}<p class="text-muted">No activity yet.</p>{% endif %}</div>
+</div>
+{% endblock %}

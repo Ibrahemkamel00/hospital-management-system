@@ -1,0 +1,48 @@
+{% extends 'cssd/base.html' %}
+{% block content %}
+{% include 'medical_store/_cards.html' %}
+<div class="ms-panel">
+  <h3 class="fw-bold">➕ Add New Product</h3>
+  <p class="text-muted">Define the product once, then receive stock batches whenever new quantities arrive.</p>
+  <form method="post">{% csrf_token %}
+    <div class="row g-3">
+      <div class="col-md-6"><label class="form-label fw-bold">Product Name</label>{{ form.name }}{{ form.name.errors }}</div>
+      <div class="col-md-6"><label class="form-label fw-bold">Code</label>{{ form.code }}{{ form.code.errors }}</div>
+      <div class="col-md-6"><label class="form-label fw-bold">Manufacturer</label>{{ form.manufacturer }}{{ form.manufacturer.errors }}</div>
+      <div class="col-md-6"><label class="form-label fw-bold">Category</label>{{ form.category }}{{ form.category.errors }}</div>
+      <div class="col-md-6"><label class="form-label fw-bold">Shelf / Storage Location <span class="text-danger">*</span></label>{{ form.shelf }}{{ form.shelf.errors }}</div>
+      <div class="col-md-6"><label class="form-label fw-bold">Minimum Stock</label>{{ form.minimum_stock }}{{ form.minimum_stock.errors }}</div>
+    </div>
+
+    <div class="ms-panel" style="box-shadow:none;border:1px solid #e7eef3">
+      <h5 class="fw-bold">Available Units for this Product</h5>
+      <p class="text-muted mb-2">The nurse will only see the units selected here.</p>
+      <div class="row g-2">
+        {% for checkbox in form.allowed_units %}
+          <div class="col-md-3 col-6"><label class="form-check fw-bold">{{ checkbox.tag }} {{ checkbox.choice_label }}</label></div>
+        {% endfor %}
+      </div>
+      {{ form.allowed_units.errors }}
+      <div id="packBox" class="row g-3 mt-2">
+        <div class="col-md-4 unit-extra" data-unit="Pack"><label class="form-label fw-bold">Pack contains how many pieces?</label>{{ form.pack_pieces }}{{ form.pack_pieces.errors }}</div>
+        <div class="col-md-4 unit-extra" data-unit="Carton"><label class="form-label fw-bold">Carton contains how many pieces?</label>{{ form.carton_pieces }}{{ form.carton_pieces.errors }}</div>
+        <div class="col-md-4 unit-extra" data-unit="Set"><label class="form-label fw-bold">Set contains how many pieces?</label>{{ form.set_pieces }}{{ form.set_pieces.errors }}</div>
+      </div>
+    </div>
+
+    <div class="form-check mt-3">{{ form.is_active }} <label class="form-check-label fw-bold">Active</label></div>
+    <button class="btn btn-success mt-3">Save Product</button>
+    <a class="btn btn-secondary mt-3" href="{% url 'medical_store:store_dashboard' %}">Back</a>
+  </form>
+</div>
+<script>
+function toggleUnitExtras(){
+  const selected = new Set([...document.querySelectorAll('input[name="allowed_units"]:checked')].map(x=>x.value));
+  document.querySelectorAll('.unit-extra').forEach(box=>{
+    box.style.display = selected.has(box.dataset.unit) ? 'block' : 'none';
+  });
+}
+document.addEventListener('change', e=>{ if(e.target.name==='allowed_units') toggleUnitExtras(); });
+toggleUnitExtras();
+</script>
+{% endblock %}

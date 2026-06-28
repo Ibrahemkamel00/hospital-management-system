@@ -1,0 +1,32 @@
+{% extends 'cssd/base.html' %}
+{% block content %}
+{% include 'medical_store/_cards.html' %}
+<div class="ms-panel">
+  <div class="d-flex justify-content-between flex-wrap gap-2 align-items-center">
+    <h3 class="fw-bold">Issue Items - {{ store_request.request_number }}</h3>
+    <button type="button" onclick="window.print()" class="btn btn-outline-primary no-print">🖨 Print Picking List</button>
+  </div>
+  <form method="post">{% csrf_token %}
+    <div class="table-responsive">
+      <table class="table table-bordered ms-table">
+        <thead><tr><th>Shelf</th><th>Product</th><th>Requested</th><th>Available</th><th>Issued Qty</th><th>Issued Unit</th><th>Reason if changed</th></tr></thead>
+        <tbody>
+          {% for item in store_request.items.all|dictsort:"product.shelf" %}
+          <tr>
+            <td><span class="shelf-badge">{{ item.product.shelf|default:'-' }}</span></td>
+            <td><b>{{ item.product.name }}</b><br><small>{{ item.product.code }}</small></td>
+            <td>{{ item.requested_display }}</td>
+            <td>{{ item.product.display_stock }}</td>
+            <td><input type="number" class="form-control" name="issued_{{ item.id }}" value="{{ item.requested_quantity }}" min="0"></td>
+            <td><select name="issued_unit_{{ item.id }}" class="form-select">{% for unit in item.product.get_allowed_units %}<option value="{{ unit }}" {% if unit == item.requested_unit %}selected{% endif %}>{{ unit }}</option>{% endfor %}</select></td>
+            <td><input type="text" class="form-control" name="reason_{{ item.id }}" placeholder="Required if issued qty changed"></td>
+          </tr>
+          {% endfor %}
+        </tbody>
+      </table>
+    </div>
+    <label class="form-label fw-bold">Store Comment</label><textarea class="form-control" name="comment" rows="3"></textarea>
+    <button class="btn btn-primary mt-3">Issue Items</button><a class="btn btn-secondary mt-3" href="{% url 'medical_store:request_detail' store_request.id %}">Back</a>
+  </form>
+</div>
+{% endblock %}

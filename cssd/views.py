@@ -137,6 +137,9 @@ def is_infection_manager(user):
 def is_nurse_user(user):
     return user.groups.filter(name__in=["NURSE", "CLINIC", "MALE", "FEMALE", "SPECIALTY", "EMERGENCY"]).exists()
 
+def is_medical_store_manager(user):
+    return user.groups.filter(name__in=["MEDICAL_STORE_MANAGER", "Medical Store Manager", "STORE_MANAGER"]).exists()
+
 def last_timeline_date(maintenance_request, actions):
     item = maintenance_request.timeline.filter(action__in=actions).order_by("-created_at").first()
     return item.created_at if item else None
@@ -1351,11 +1354,49 @@ def system_selection(request):
     if is_engineer(request.user):
         return redirect("engineer_dashboard")
 
+    if is_medical_store_manager(request.user):
+        return redirect("medical_store:store_dashboard")
+
     return render(
         request,
         "cssd/system_selection.html",
-        {"is_hospital_manager_user": is_hospital_manager(request.user)}
+        {
+            "is_hospital_manager_user": is_hospital_manager(request.user),
+            "show_medical_store": not is_engineer(request.user),
+            "show_management_center": is_maintenance_manager(request.user),
+            "show_ai_assistant": is_maintenance_manager(request.user) or is_hospital_manager(request.user),
+        }
     )
+
+
+@login_required
+def management_center(request):
+    if not is_maintenance_manager(request.user):
+        return HttpResponseForbidden("You are not allowed to access Management Center.")
+
+    stats = {
+        "users": User.objects.count(),
+        "locations": Location.objects.count(),
+        "assets": Asset.objects.count(),
+        "pm_templates": PMHistory.objects.count(),
+    }
+
+    return render(request, "cssd/management_center.html", {"stats": stats})
+
+
+@login_required
+def ai_assistant(request):
+    if not (is_maintenance_manager(request.user) or is_hospital_manager(request.user)):
+        return HttpResponseForbidden("You are not allowed to access AI Assistant.")
+
+    quick_stats = {
+        "assets": Asset.objects.count(),
+        "open_maintenance": MaintenanceRequest.objects.exclude(status="CLOSED").count(),
+        "closed_maintenance": MaintenanceRequest.objects.filter(status="CLOSED").count(),
+        "cssd_open": CSSDRequest.objects.exclude(status="CLOSED").count(),
+    }
+
+    return render(request, "cssd/ai_assistant.html", {"quick_stats": quick_stats})
 
 from django.utils import timezone
 

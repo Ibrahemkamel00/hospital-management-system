@@ -1,0 +1,16 @@
+{% extends 'cssd/base.html' %}
+{% block content %}
+{% include 'medical_store/_cards.html' %}
+<div class="ms-dashboard-wrap">
+  <div class="text-center mb-4"><h2 class="fw-bold text-success">Welcome, {{ user.get_full_name|default:user.username }} 👋</h2><h4>Medical Store Nurse Dashboard</h4></div>
+  <div class="ms-grid">
+    <a class="ms-card ms-green" href="{% url 'medical_store:new_request' %}"><div class="card-body"><div class="icon">📝</div><h4>New Request</h4><p>Medical supplies</p></div></a>
+    <a class="ms-card ms-gray" href="{% url 'medical_store:request_list_status' 'DRAFT' %}"><div class="card-body"><h4>Drafts</h4><div class="num">{{ draft_count }}</div></div></a>
+    <a class="ms-card ms-yellow" href="{% url 'medical_store:request_list_status' 'PENDING_HOSPITAL_MANAGER' %}"><div class="card-body"><h4>Pending</h4><div class="num">{{ pending_count }}</div></div></a>
+    <a class="ms-card ms-blue" href="{% url 'medical_store:request_list_status' 'APPROVED_WAITING_STORE' %}"><div class="card-body"><h4>Waiting Store</h4><div class="num">{{ approved_count }}</div></div></a>
+    <a class="ms-card ms-orange" href="{% url 'medical_store:request_list_status' 'ISSUED_WAITING_NURSE_CONFIRM' %}"><div class="card-body"><h4>Confirm Receipt</h4><div class="num">{{ waiting_confirm_count }}</div></div></a>
+    <a class="ms-card ms-purple" href="{% url 'medical_store:request_list_status' 'CLOSED' %}"><div class="card-body"><h4>Closed</h4><div class="num">{{ closed_count }}</div></div></a>
+    <a class="ms-card ms-red" href="{% url 'medical_store:request_list_status' 'REJECTED' %}"><div class="card-body"><h4>Rejected</h4><div class="num">{{ rejected_count }}</div></div></a>
+  </div>
+</div>
+{% endblock %}

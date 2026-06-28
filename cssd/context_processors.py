@@ -113,6 +113,16 @@ def system_header(request):
             "is_cssd_user": is_cssd_user,
         }
 
+    if path.startswith("/medical-store"):
+        return {
+            "system_title": "Medical Store System",
+            "system_subtitle": "Medical Consumables & Supplies Workflow",
+            "back_dashboard_url": "/medical-store/",
+            "is_engineer_user": is_engineer_user,
+            "is_admin_user": is_admin_user,
+            "is_cssd_user": is_cssd_user,
+        }
+
     if path.startswith("/systems"):
         return {
             "system_title": "Hospital Management Systems",

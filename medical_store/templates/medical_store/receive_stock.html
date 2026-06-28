@@ -1,0 +1,52 @@
+{% extends 'cssd/base.html' %}
+{% block content %}
+{% include 'medical_store/_cards.html' %}
+{{ product_units|json_script:"product-units-data" }}
+<div class="ms-panel">
+  <h3 class="fw-bold">📥 Receive New Stock</h3>
+  <p class="text-muted">Batch Number is optional. Shelf is defined in product data.</p>
+  <form method="post">{% csrf_token %}
+    <div class="row g-3">
+      <div class="col-md-6"><label class="form-label fw-bold">Product</label>{{ form.product }}{{ form.product.errors }}</div>
+      <div class="col-md-6"><label class="form-label fw-bold">Supplier Name</label>{{ form.supplier_name }}{{ form.supplier_name.errors }}</div>
+      <div class="col-md-6"><label class="form-label fw-bold">Batch Number <span class="text-muted">Optional</span></label>{{ form.batch_number }}{{ form.batch_number.errors }}</div>
+      <div class="col-md-6"><label class="form-label fw-bold">Received Date</label>{{ form.received_date }}{{ form.received_date.errors }}</div>
+      <div class="col-md-6"><label class="form-label fw-bold">Manufacturing Date</label>{{ form.manufacturing_date }}{{ form.manufacturing_date.errors }}</div>
+      <div class="col-md-6"><label class="form-label fw-bold">Expiry Date</label>{{ form.expiry_date }}{{ form.expiry_date.errors }}</div>
+      <div class="col-md-4"><label class="form-label fw-bold">Received Quantity</label>{{ form.received_quantity }}{{ form.received_quantity.errors }}</div>
+      <div class="col-md-4"><label class="form-label fw-bold">Received Unit</label>{{ form.received_unit }}{{ form.received_unit.errors }}</div>
+      <div class="col-md-4"><label class="form-label fw-bold">Equivalent</label><div id="equivalentBox" class="form-control bg-light">-</div></div>
+      <div class="col-md-12"><label class="form-label fw-bold">Notes</label>{{ form.notes }}{{ form.notes.errors }}</div>
+    </div>
+    <button class="btn btn-primary mt-3">Receive Stock</button>
+    <a class="btn btn-secondary mt-3" href="{% url 'medical_store:store_dashboard' %}">Back</a>
+  </form>
+</div>
+<script>
+const productData = JSON.parse(document.getElementById('product-units-data').textContent);
+const productSelect = document.getElementById('id_product');
+const unitSelect = document.getElementById('id_received_unit');
+const qtyInput = document.getElementById('id_received_quantity');
+function refreshUnits(){
+  const data = productData[productSelect.value] || {units: [], unit_pieces: {}};
+  const current = unitSelect.value;
+  unitSelect.innerHTML = '';
+  (data.units || []).forEach(u=>{
+    const opt = document.createElement('option'); opt.value = u; opt.textContent = u; unitSelect.appendChild(opt);
+  });
+  if([...unitSelect.options].some(o=>o.value===current)) unitSelect.value = current;
+  updateEquivalent();
+}
+function updateEquivalent(){
+  const data = productData[productSelect.value] || {unit_pieces: {}};
+  const unit = unitSelect.value;
+  const pieces = parseInt((data.unit_pieces || {})[unit] || 1);
+  const qty = parseInt(qtyInput.value || 0);
+  document.getElementById('equivalentBox').textContent = pieces > 1 ? `${qty * pieces} Pieces` : `${qty} ${unit || ''}`;
+}
+productSelect.addEventListener('change', refreshUnits);
+unitSelect.addEventListener('change', updateEquivalent);
+qtyInput.addEventListener('input', updateEquivalent);
+refreshUnits();
+</script>
+{% endblock %}

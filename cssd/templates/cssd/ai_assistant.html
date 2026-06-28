@@ -1,0 +1,23 @@
+{% extends 'cssd/base.html' %}
+{% block title %}AI Assistant{% endblock %}
+{% block content %}
+<style>
+.ai-hero{background:linear-gradient(135deg,#0f766e,#14b8a6);color:#fff;border-radius:26px;padding:30px;margin:18px 0 24px;box-shadow:0 16px 38px rgba(20,184,166,.22)}.ai-hero h1{font-weight:900;font-size:34px;margin:0 0 8px}.ai-card{background:white;border-radius:20px;border:1px solid #ccfbf1;padding:20px;box-shadow:0 12px 30px rgba(15,23,42,.08);height:100%}.ai-stat{font-size:30px;font-weight:900;color:#0f766e}.prompt-box{background:#f8fafc;border:1px solid #e2e8f0;border-radius:18px;padding:18px}.prompt-pill{display:inline-block;margin:5px;padding:8px 12px;border-radius:999px;background:#ecfeff;color:#155e75;font-weight:800;font-size:13px}.chat-placeholder{min-height:220px;background:linear-gradient(180deg,#ffffff,#f8fafc);border:2px dashed #99f6e4;border-radius:22px;display:flex;align-items:center;justify-content:center;text-align:center;color:#64748b;font-weight:800;padding:30px}
+</style>
+<div class="container mt-4">
+  <div class="ai-hero">
+    <h1>🤖 AI Assistant</h1>
+    <p class="mb-0">Smart assistant for hospital operations, reports, maintenance, CSSD, infection control and medical store insights.</p>
+  </div>
+  <div class="row g-3 mb-4">
+    <div class="col-md-3 col-6"><div class="ai-card text-center"><div class="ai-stat">{{ quick_stats.assets }}</div><div class="fw-bold text-muted">Assets</div></div></div>
+    <div class="col-md-3 col-6"><div class="ai-card text-center"><div class="ai-stat">{{ quick_stats.open_maintenance }}</div><div class="fw-bold text-muted">Open Maintenance</div></div></div>
+    <div class="col-md-3 col-6"><div class="ai-card text-center"><div class="ai-stat">{{ quick_stats.closed_maintenance }}</div><div class="fw-bold text-muted">Closed Maintenance</div></div></div>
+    <div class="col-md-3 col-6"><div class="ai-card text-center"><div class="ai-stat">{{ quick_stats.cssd_open }}</div><div class="fw-bold text-muted">Open CSSD</div></div></div>
+  </div>
+  <div class="row g-4">
+    <div class="col-lg-7"><div class="chat-placeholder"><div><div style="font-size:48px">🤖</div><div>AI chat engine will be connected in the next phase.</div><small>For now, this page is ready as the official AI Assistant entry point.</small></div></div></div>
+    <div class="col-lg-5"><div class="prompt-box"><h4 class="fw-bold mb-3">Suggested Questions</h4><span class="prompt-pill">PM due next week</span><span class="prompt-pill">Open maintenance by location</span><span class="prompt-pill">CSSD delayed requests</span><span class="prompt-pill">Low stock items</span><span class="prompt-pill">Best performing engineer</span><span class="prompt-pill">Generate monthly report</span></div></div>
+  </div>
+</div>
+{% endblock %}
